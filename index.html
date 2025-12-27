@@ -1,150 +1,212 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 <title>청춘 연간 시뮬레이터</title>
 <style>
-body { font-family: sans-serif; background:#f7f7f7; padding:20px; }
-button { margin:5px; padding:6px 10px; }
-.card { background:#fff; padding:10px; margin:10px 0; border-radius:6px; }
-input { margin:3px; }
-.small { color:#666; font-size:12px; }
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: linear-gradient(to bottom, #fff7e8, #ffeedd);
+    padding: 20px;
+    margin: 0;
+  }
+  h1 {
+    text-align: center;
+    font-size: 2em;
+    color: #ff6f61;
+    margin-bottom: 10px;
+  }
+  #dateDisplay {
+    text-align: center;
+    font-size: 1.2em;
+    color: #555;
+    margin-bottom: 20px;
+  }
+  button {
+    margin: 5px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    background-color: #ffb380;
+    color: white;
+    font-weight: bold;
+  }
+  button:hover {
+    background-color: #ffa64d;
+  }
+  .card {
+    background: #fff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+  }
+  input[type="text"], input[type="number"] {
+    padding: 5px;
+    margin: 3px 0;
+    width: 90%;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  #logContent {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 10px;
+    padding: 10px;
+    background: #fffaf0;
+    border-radius: 8px;
+  }
+  #logContent div {
+    margin-bottom: 10px;
+  }
+  .log-date {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
 </style>
 </head>
 <body>
 
-<h2 id="date"></h2>
+<h1>🌸 청춘 연간 시뮬레이터 🌸</h1>
+<div id="dateDisplay"></div>
 
-<button onclick="nextDay()">하루 일과</button>
-<button onclick="showStudents()">학생 명단</button>
-<button onclick="showAdd()">캐릭터 추가</button>
+<div style="text-align:center;">
+  <button onclick="nextDay()">➡ 다음 날</button>
+  <button onclick="showDailyLog()">📖 오늘 일과 보기</button>
+  <button onclick="showStudents()">👩‍🎓 학생 명단</button>
+  <button onclick="showAdd()">➕ 캐릭터 추가</button>
+  <button onclick="clearDailyLogs()">🗑️ 기록 삭제</button>
+</div>
 
 <div id="main"></div>
 
+<div id="logContent"></div>
+
 <script>
+// ---------------- state ----------------
 let state = {
-  date: new Date(2026, 2, 2),
-  characters: []
+  date: new Date(2026, 2, 2), // 3월 2일
+  characters: [],
+  dailyLogs: []
 };
 
+// ---------------- 유틸 ----------------
 function formatDate(d){
-  return `${d.getMonth()+1}월 ${d.getDate()}일`;
+  const month = d.getMonth()+1;
+  const day = d.getDate();
+  return `${month}월 ${day}일`;
+}
+function getSeason(d){
+  const m = d.getMonth()+1;
+  if(m >=3 && m<=5) return "봄";
+  if(m >=6 && m<=8) return "여름";
+  if(m >=9 && m<=11) return "가을";
+  return "겨울";
+}
+function updateDateDisplay(){
+  document.getElementById("dateDisplay").innerText = `📅 ${formatDate(state.date)} · ${getSeason(state.date)}`;
 }
 
-function updateDate(){
-  document.getElementById("date").innerText = `${formatDate(state.date)}`;
-}
-
-// 하루 일과
-function nextDay(){
+// ---------------- 다음 날 ----------------
+async function nextDay(){
+  // 날짜 증가
+  const prevMonth = state.date.getMonth();
   state.date.setDate(state.date.getDate()+1);
-  let text = "";
 
-  if(state.characters.length === 0){
-    text = "아직 캐릭터가 없습니다. 캐릭터를 추가해주세요.";
-  } else {
-    state.characters.forEach(c=>{
-      if(c.graduated){
-        text += `${c.name || "이름 없음"}는 졸업 후 ${c.postGrad || "자신의 시간을"} 보내고 있다.\n`;
-      } else {
-        text += `${c.name || "이름 없음"}는 학교에서 하루를 보냈다.\n`;
-      }
-    });
+  // 3학년 12월 31일 → 1월 1일 졸업 이벤트
+  if(prevMonth===11 && state.date.getMonth()===0){
+    await handleGraduation();
   }
 
-  document.getElementById("main").innerText = text;
-  checkGraduation();
-  updateDate();
+  // 하루일과 생성 (AI)
+  await generateDailyLog();
+
+  updateDateDisplay();
 }
 
-// 학생 명단
+// ---------------- 졸업 진로 ----------------
+async function handleGraduation(){
+  for(let c of state.characters){
+    if(c.grade===3 && !c.graduated){
+      c.graduated = true;
+      let choice = prompt(`${c.name || "이름 없음"}는 이후 어떻게 되나요?\n1. 대학교 입학\n2. 대학교 입학하지 않음`);
+      if(choice==="1"){
+        c.postGrad = "대학생";
+      } else if(choice==="2"){
+        let job = prompt(`${c.name || "이름 없음"}는 어떤 일을 하게 되나요?`);
+        c.postGrad = job || "미정";
+      } else {
+        c.postGrad = "미정";
+      }
+    }
+  }
+}
+
+// ---------------- 학생 명단 ----------------
 function showStudents(){
   let html = "";
-  if(state.characters.length === 0){
+  if(state.characters.length===0){
     html = "학생이 없습니다.";
   } else {
     state.characters.forEach((c,i)=>{
       html += `<div class="card">
         <b>${c.name || "이름 없음"}</b> (${c.graduated?"졸업생":c.grade+"학년"})<br>
         <span class="small">${c.personality.join(", ")}</span><br>
-        <button onclick="editChar(${i})">수정</button>
-        <button onclick="removeChar(${i})">삭제</button>
+        <button onclick="editChar(${i})">✏️ 수정</button>
+        <button onclick="removeChar(${i})">❌ 삭제</button>
       </div>`;
     });
   }
   document.getElementById("main").innerHTML = html;
 }
 
-// 캐릭터 추가 화면
+// ---------------- 캐릭터 추가 ----------------
 function showAdd(){
   document.getElementById("main").innerHTML = `
     <div class="card">
-      이름 <input id="charName"><br>
+      이름 <input id="charName" type="text"><br>
       학년 <input id="grade" type="number" min="1" max="3"><br>
-      성격 키워드(쉼표) <input id="per"><br>
+      성격 키워드(쉼표) <input id="per" type="text"><br>
       <button onclick="addChar()">추가</button>
     </div>
   `;
 }
-
-// 캐릭터 추가
 function addChar(){
-  const name = (document.getElementById("charName").value || "").trim();
+  const name = (document.getElementById("charName").value||"").trim();
   const grade = Number(document.getElementById("grade").value);
-  const personality = (document.getElementById("per").value || "")
-                        .split(",")
-                        .map(s => s.trim())
-                        .filter(Boolean);
-
-  if(!name || !grade || personality.length === 0){
+  const personality = (document.getElementById("per").value||"").split(",").map(s=>s.trim()).filter(Boolean);
+  if(!name || !grade || personality.length===0){
     alert("이름, 학년, 성격 키워드를 모두 입력해주세요.");
     return;
   }
-
-  state.characters.push({
-    name,
-    grade,
-    personality,
-    graduated: false,
-    postGrad: null
-  });
+  state.characters.push({name, grade, personality, graduated:false, postGrad:null});
   showStudents();
 }
-
-// 캐릭터 수정
 function editChar(i){
   const c = state.characters[i];
   document.getElementById("main").innerHTML = `
     <div class="card">
-      이름 <input id="charName" value="${c.name || ""}"><br>
+      이름 <input id="charName" type="text" value="${c.name || ""}"><br>
       학년 <input id="grade" type="number" min="1" max="3" value="${c.grade}"><br>
-      성격 키워드 <input id="per" value="${c.personality.join(", ")}"><br>
+      성격 키워드 <input id="per" type="text" value="${c.personality.join(", ")}"><br>
       <button onclick="saveChar(${i})">저장</button>
     </div>
   `;
 }
-
-// 캐릭터 저장
 function saveChar(i){
-  const name = (document.getElementById("charName").value || "").trim();
+  const name = (document.getElementById("charName").value||"").trim();
   const grade = Number(document.getElementById("grade").value);
-  const personality = (document.getElementById("per").value || "")
-                        .split(",")
-                        .map(s => s.trim())
-                        .filter(Boolean);
-
-  if(!name || !grade || personality.length === 0){
-    alert("이름, 학년, 성격 키워드를 모두 입력해주세요.");
+  const personality = (document.getElementById("per").value||"").split(",").map(s=>s.trim()).filter(Boolean);
+  if(!name || !grade || personality.length===0){
+    alert("모든 항목을 입력해주세요.");
     return;
   }
-
   state.characters[i].name = name;
   state.characters[i].grade = grade;
   state.characters[i].personality = personality;
   showStudents();
 }
-
-// 캐릭터 삭제
 function removeChar(i){
   if(confirm("삭제할까요?")){
     state.characters.splice(i,1);
@@ -152,25 +214,54 @@ function removeChar(i){
   }
 }
 
-// 졸업 체크
-function checkGraduation(){
-  state.characters.forEach(c=>{
-    if(!c.graduated && c.grade === 3 && state.date.getMonth() >= 1){
-      c.graduated = true;
-
-      let r = prompt(`${c.name || "이름 없음"}는 졸업 후 어떻게 되나요?\n1. 대학교\n2. 아르바이트\n3. 백수\n4. 기타`);
-      switch(r){
-        case "1": c.postGrad = "대학생"; break;
-        case "2": c.postGrad = "아르바이트"; break;
-        case "3": c.postGrad = "백수"; break;
-        case "4": c.postGrad = "다른 길"; break;
-        default: c.postGrad = "미정"; break;
-      }
-    }
-  });
+// ---------------- 하루일과 기록 ----------------
+function showDailyLog(){
+  const logDiv = document.getElementById("logContent");
+  logDiv.scrollTop = logDiv.scrollHeight;
 }
 
-updateDate();
+function clearDailyLogs(){
+  if(confirm("지금까지의 하루일과 기록을 삭제할까요?")){
+    state.dailyLogs = [];
+    document.getElementById("logContent").innerHTML="";
+  }
+}
+
+// ---------------- AI 하루일과 생성 ----------------
+async function generateDailyLog(){
+  const dateStr = formatDate(state.date);
+  const season = getSeason(state.date);
+  
+  // 이벤트 체크
+  let event = "";
+  const month = state.date.getMonth()+1;
+  const day = state.date.getDate();
+  if(month===3 && day===2) event="입학식";
+  else if(month===4 && day>=1 && day<=7) event="중간고사";
+  else if(month===6 && day>=1 && day<=7) event="기말고사";
+  else if(month>=7 && month<=8) event="방학";
+  else if(month===9) event="체육대회";
+  else if(month===10 && day>=1 && day<=7) event="중간고사";
+  else if(month===12 && day>=1 && day<=7) event="기말고사";
+  else if(month===2 && day>=10 && day<=15) event="졸업식";
+
+  // 실제 GPT 호출 부분 (예시)
+  // 여기서는 demo용으로 랜덤 생성
+  let logText = "";
+  state.characters.forEach(c=>{
+    let mood = ["즐겁게","조금 피곤하지만","활발하게","설레는 마음으로"];
+    let action = ["수업을 들었다","친구와 수다를 떨었다","운동장에서 시간을 보냈다","점심시간에 간식을 먹었다"];
+    logText += `<div><span class="log-date">${dateStr} - ${c.name || "이름 없음"}</span><br>오늘 하루는 ${season} 분위기 속에서 ${event || "평범한 하루"}를 보내며, ${mood[Math.floor(Math.random()*mood.length)]} ${action[Math.floor(Math.random()*action.length)]}.</div>`;
+  });
+  state.dailyLogs.push(logText);
+
+  // 렌더링
+  const logDiv = document.getElementById("logContent");
+  logDiv.innerHTML = state.dailyLogs.join("");
+  logDiv.scrollTop = logDiv.scrollHeight;
+}
+
+updateDateDisplay();
 </script>
 
 </body>
