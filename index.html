@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>청춘 연간 시뮬레이터</title>
+<style>
+body { font-family: sans-serif; background:#f7f7f7; padding:20px; }
+button { margin:5px; padding:8px 12px; }
+.card { background:#fff; padding:10px; margin:10px 0; border-radius:6px; }
+.small { color:#666; font-size:12px; }
+</style>
+</head>
+<body>
+
+<h2 id="date"></h2>
+
+<button onclick="nextDay()">하루 일과</button>
+<button onclick="showStudents()">학생 명단</button>
+
+<div id="main"></div>
+
+<script>
+let state = {
+  dayCount: 0,
+  date: new Date(2026, 2, 2),
+  characters: [],
+  graduatedChoices: {}
+};
+
+// 👉 캐릭터 추가 (사용자용)
+state.characters.push({
+  name: "이름을수정하세요",
+  grade: 1,
+  personality: ["성격키워드"],
+  graduated: false,
+  postGrad: null
+});
+
+function formatDate(d){
+  return `${d.getMonth()+1}월 ${d.getDate()}일`;
+}
+
+function nextDay(){
+  state.dayCount++;
+  state.date.setDate(state.date.getDate()+1);
+
+  let text = "";
+
+  state.characters.forEach(c=>{
+    if(c.graduated){
+      if(c.postGrad){
+        text += `${c.name}는 ${c.postGrad}로서 하루를 보냈다.\n`;
+      } else {
+        text += `${c.name}는 졸업 후의 시간을 보내고 있다.\n`;
+      }
+    } else {
+      text += `${c.name}는 학교에서 평범한 하루를 보냈다.\n`;
+    }
+  });
+
+  document.getElementById("main").innerText = text;
+  updateDate();
+  checkGraduation();
+}
+
+function updateDate(){
+  document.getElementById("date").innerText =
+    `${formatDate(state.date)} · ${state.characters.every(c=>c.graduated)?"졸업 이후":"재학 중"}`;
+}
+
+function showStudents(){
+  let html = "";
+  state.characters.forEach(c=>{
+    html += `<div class="card">
+      <b>${c.name}</b> (${c.graduated?"졸업생":c.grade+"학년"})<br>
+      <span class="small">${c.personality.join(", ")}</span>
+    </div>`;
+  });
+  document.getElementById("main").innerHTML = html;
+}
+
+function checkGraduation(){
+  state.characters.forEach(c=>{
+    if(!c.graduated && c.grade === 3 && state.date.getMonth() >= 1){
+      c.graduated = true;
+      askPostGrad(c);
+    }
+  });
+
+  if(state.characters.every(c=>c.graduated)){
+    document.getElementById("main").innerText =
+      "모든 학생이 졸업했다.\n이야기는 여기서 끝이 난다.";
+  }
+}
+
+function askPostGrad(c){
+  const choice = prompt(
+    `${c.name}는 졸업 후 어떻게 되나요?\n1. 대학교\n2. 아르바이트\n3. 백수\n4. 기타`
+  );
+  const map = {1:"대학생",2:"아르바이트",3:"백수",4:"다른 길"};
+  c.postGrad = map[choice] || "알 수 없음";
+}
+
+updateDate();
+</script>
+
+</body>
+</html>
