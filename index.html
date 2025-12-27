@@ -32,40 +32,50 @@ function formatDate(d){
 }
 
 function updateDate(){
-  document.getElementById("date").innerText =
-    `${formatDate(state.date)}`;
+  document.getElementById("date").innerText = `${formatDate(state.date)}`;
 }
 
+// 하루 일과
 function nextDay(){
   state.date.setDate(state.date.getDate()+1);
   let text = "";
 
-  state.characters.forEach(c=>{
-    if(c.graduated){
-      text += `${c.name}는 졸업 후 ${c.postGrad || "자신의 시간을"} 보내고 있다.\n`;
-    } else {
-      text += `${c.name}는 학교에서 하루를 보냈다.\n`;
-    }
-  });
+  if(state.characters.length === 0){
+    text = "아직 캐릭터가 없습니다. 캐릭터를 추가해주세요.";
+  } else {
+    state.characters.forEach(c=>{
+      if(c.graduated){
+        text += `${c.name || "이름 없음"}는 졸업 후 ${c.postGrad || "자신의 시간을"} 보내고 있다.\n`;
+      } else {
+        text += `${c.name || "이름 없음"}는 학교에서 하루를 보냈다.\n`;
+      }
+    });
+  }
 
-  document.getElementById("main").innerText = text || "아직 캐릭터가 없다.";
+  document.getElementById("main").innerText = text;
   checkGraduation();
   updateDate();
 }
 
+// 학생 명단
 function showStudents(){
   let html = "";
-  state.characters.forEach((c,i)=>{
-    html += `<div class="card">
-      <b>${c.name}</b> (${c.graduated?"졸업생":c.grade+"학년"})<br>
-      <span class="small">${c.personality.join(", ")}</span><br>
-      <button onclick="editChar(${i})">수정</button>
-      <button onclick="removeChar(${i})">삭제</button>
-    </div>`;
-  });
-  document.getElementById("main").innerHTML = html || "학생이 없다.";
+  if(state.characters.length === 0){
+    html = "학생이 없습니다.";
+  } else {
+    state.characters.forEach((c,i)=>{
+      html += `<div class="card">
+        <b>${c.name || "이름 없음"}</b> (${c.graduated?"졸업생":c.grade+"학년"})<br>
+        <span class="small">${c.personality.join(", ")}</span><br>
+        <button onclick="editChar(${i})">수정</button>
+        <button onclick="removeChar(${i})">삭제</button>
+      </div>`;
+    });
+  }
+  document.getElementById("main").innerHTML = html;
 }
 
+// 캐릭터 추가 화면
 function showAdd(){
   document.getElementById("main").innerHTML = `
     <div class="card">
@@ -77,10 +87,14 @@ function showAdd(){
   `;
 }
 
+// 캐릭터 추가
 function addChar(){
-  const name = document.getElementById("charName").value.trim();
+  const name = (document.getElementById("charName").value || "").trim();
   const grade = Number(document.getElementById("grade").value);
-  const personality = document.getElementById("per").value.split(",").map(s => s.trim()).filter(Boolean);
+  const personality = (document.getElementById("per").value || "")
+                        .split(",")
+                        .map(s => s.trim())
+                        .filter(Boolean);
 
   if(!name || !grade || personality.length === 0){
     alert("이름, 학년, 성격 키워드를 모두 입력해주세요.");
@@ -97,11 +111,12 @@ function addChar(){
   showStudents();
 }
 
+// 캐릭터 수정
 function editChar(i){
   const c = state.characters[i];
   document.getElementById("main").innerHTML = `
     <div class="card">
-      이름 <input id="charName" value="${c.name}"><br>
+      이름 <input id="charName" value="${c.name || ""}"><br>
       학년 <input id="grade" type="number" min="1" max="3" value="${c.grade}"><br>
       성격 키워드 <input id="per" value="${c.personality.join(", ")}"><br>
       <button onclick="saveChar(${i})">저장</button>
@@ -109,10 +124,14 @@ function editChar(i){
   `;
 }
 
+// 캐릭터 저장
 function saveChar(i){
-  const name = document.getElementById("charName").value.trim();
+  const name = (document.getElementById("charName").value || "").trim();
   const grade = Number(document.getElementById("grade").value);
-  const personality = document.getElementById("per").value.split(",").map(s => s.trim()).filter(Boolean);
+  const personality = (document.getElementById("per").value || "")
+                        .split(",")
+                        .map(s => s.trim())
+                        .filter(Boolean);
 
   if(!name || !grade || personality.length === 0){
     alert("이름, 학년, 성격 키워드를 모두 입력해주세요.");
@@ -125,6 +144,7 @@ function saveChar(i){
   showStudents();
 }
 
+// 캐릭터 삭제
 function removeChar(i){
   if(confirm("삭제할까요?")){
     state.characters.splice(i,1);
@@ -132,11 +152,13 @@ function removeChar(i){
   }
 }
 
+// 졸업 체크
 function checkGraduation(){
   state.characters.forEach(c=>{
     if(!c.graduated && c.grade === 3 && state.date.getMonth() >= 1){
       c.graduated = true;
-      const r = prompt(`${c.name}는 졸업 후 어떻게 되나요?\n1. 대학교\n2. 아르바이트\n3. 백수\n4. 기타`);
+
+      let r = prompt(`${c.name || "이름 없음"}는 졸업 후 어떻게 되나요?\n1. 대학교\n2. 아르바이트\n3. 백수\n4. 기타`);
       switch(r){
         case "1": c.postGrad = "대학생"; break;
         case "2": c.postGrad = "아르바이트"; break;
