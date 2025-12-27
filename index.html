@@ -6,485 +6,658 @@
 <title>여름 청춘 시뮬레이터</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
+
   body {
-    margin:0; padding:0;
-    font-family: 'Gowun Dodum', sans-serif;
-    background: #dbe9f4;
-    color: #1b365d;
-    display: flex; height: 100vh; overflow: hidden;
+    margin: 0; padding: 0; font-family: 'Gowun Dodum', sans-serif;
+    background: #e3f2fd;
+    color: #333;
+    display: flex; flex-direction: column; height: 100vh;
   }
-  #leftPane {
-    width: 38%; background: #f0f6fb;
-    border-right: 2px solid #aac9e6;
-    display: flex; flex-direction: column;
-    padding: 12px;
+
+  header {
+    background: #1565c0; color: white; padding: 12px 20px;
+    font-size: 24px; font-weight: 700;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+
+  main {
+    flex: 1;
+    display: flex;
+    gap: 12px;
+    padding: 12px 20px;
     box-sizing: border-box;
+    overflow: hidden;
   }
-  #rightPane {
-    width: 62%; padding: 16px;
-    box-sizing: border-box;
-    background: #e3f0fb;
-    display: flex; flex-direction: column;
-  }
-  h1 {
-    margin: 0 0 8px 0; font-weight: bold;
-    font-size: 24px; text-align: center;
-    color: #164a91;
-  }
-  h2 {
-    margin: 8px 0;
-    font-weight: 600;
-    border-bottom: 1px solid #aac9e6;
-    padding-bottom: 4px;
-  }
-  button {
-    cursor: pointer;
-    border: none;
-    border-radius: 12px;
-    padding: 6px 14px;
-    background: #5290e9;
-    color: white;
-    font-weight: 600;
-    transition: background 0.3s;
-  }
-  button:hover {
-    background: #366ac3;
-  }
-  button:disabled {
-    background: #a0b9de;
-    cursor: default;
-  }
-  input[type="text"], input[type="number"], textarea {
-    border: 1.5px solid #aac9e6;
+
+  #leftPanel {
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
     border-radius: 10px;
-    padding: 6px 10px;
-    font-size: 14px;
-    width: 100%;
-    box-sizing: border-box;
-    font-family: 'Gowun Dodum', sans-serif;
-    margin-bottom: 8px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
   }
-  label {
-    font-weight: 600;
-    font-size: 14px;
-  }
-  .flexRow {
-    display: flex; gap: 8px;
-    align-items: center;
-  }
-  .student-list {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px 14px;
+
+  #studentList {
+    flex: 1;
     overflow-y: auto;
-    max-height: 370px;
-    padding-right: 6px;
+    padding: 12px 10px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
-  .student-card {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-    padding: 10px;
-    font-size: 14px;
+
+  .studentCard {
+    background: #bbdefb;
+    border-radius: 8px;
+    padding: 8px 12px;
+    box-shadow: 0 2px 6px rgba(21,101,192,0.4);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
   }
-  .student-name {
+
+  .studentCard h4 {
+    margin: 0 0 6px 0;
     font-weight: 700;
-    margin-bottom: 4px;
-    color: #0e2f66;
+    font-size: 16px;
+    color: #0d47a1;
   }
-  .student-info {
+
+  .traits {
     font-size: 12px;
-    color: #4a5f80;
+    color: #29457b;
     margin-bottom: 6px;
   }
-  .btn-small {
-    padding: 4px 10px;
-    font-size: 13px;
-    background: #3a7dd5;
-  }
-  .btn-small:hover {
-    background: #2659a6;
-  }
-  .btn-danger {
-    background: #d9534f;
-  }
-  .btn-danger:hover {
-    background: #b6352b;
-  }
-  #charForm {
-    background: #eef6fd;
-    border-radius: 14px;
-    padding: 12px;
-    margin-bottom: 12px;
-    box-shadow: inset 0 0 6px #c9ddf3;
-  }
-  #charForm label {
-    display: block;
-    margin-top: 6px;
-  }
-  #charForm textarea {
-    resize: vertical;
-    height: 60px;
-  }
-  .tag {
-    background: #5290e9;
-    border-radius: 10px;
-    padding: 3px 8px;
-    margin: 2px 4px 2px 0;
-    color: white;
-    display: inline-block;
+
+  .relStatus {
     font-size: 12px;
-    user-select: none;
+    color: #3f51b5;
+    margin-bottom: 6px;
+    line-height: 1.2em;
+    white-space: pre-line;
   }
-  .tag-container {
-    margin-top: 4px;
-    min-height: 22px;
+
+  .btn-group {
+    display: flex; gap: 6px;
   }
-  #relationCanvas {
-    background: #f7fbff;
-    border-radius: 14px;
-    box-shadow: 0 2px 6px #acc5e0;
-  }
-  #toggleRelationBtn, #toggleStudentListBtn {
-    margin-bottom: 12px;
-    background: #4a7fdb;
-    border-radius: 12px;
-  }
-  #toggleRelationBtn:hover, #toggleStudentListBtn:hover {
-    background: #2f5ebf;
-  }
-  #dateTitle {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    text-align: center;
-    color: #225090;
-  }
-  #dayLog {
-    background: white;
-    border-radius: 14px;
-    padding: 10px;
-    flex-grow: 1;
-    overflow-y: auto;
-    font-size: 14px;
-    line-height: 1.5;
-    box-shadow: inset 0 0 5px #c9ddf3;
-  }
-  .eventPopup {
-    background: #cbe5fc;
-    border-radius: 14px;
-    padding: 10px 14px;
-    margin: 8px 0;
-    box-shadow: 0 0 10px #8eb6e3;
-    color: #0d2e67;
-    font-weight: 600;
-  }
-  .relationChangePopup {
-    background: #f7c6c6;
-    border-radius: 14px;
-    padding: 10px 14px;
-    margin: 8px 0;
-    box-shadow: 0 0 12px #d15151;
-    color: #7e1515;
-    font-weight: 600;
-  }
-  #controls {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 12px;
-  }
-  .inline-flex {
-    display: flex; gap: 6px; align-items: center;
-  }
-  .arrow-btn {
-    background: #5290e9;
-    border-radius: 12px;
-    padding: 6px 12px;
-    font-weight: 600;
-    user-select: none;
+
+  button.btn-small {
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: none;
     cursor: pointer;
+    background: #1976d2;
+    color: white;
+    transition: background-color 0.2s ease;
+  }
+  button.btn-small:hover {
+    background: #0d47a1;
+  }
+  button.btn-danger {
+    background: #e53935;
+  }
+  button.btn-danger:hover {
+    background: #b71c1c;
+  }
+
+  #formContainer {
+    background: #f5fafd;
+    padding: 10px 14px;
+    border-top: 1px solid #cfd8dc;
+  }
+
+  #formContainer label {
+    font-weight: 700;
+    font-size: 14px;
+    margin-top: 8px;
+    display: block;
+    color: #0d47a1;
+  }
+
+  #formContainer input[type="text"],
+  #formContainer input[type="number"],
+  #formContainer select {
+    width: 100%;
+    padding: 6px 8px;
+    margin-top: 4px;
+    box-sizing: border-box;
+    border-radius: 6px;
+    border: 1.5px solid #90caf9;
+    font-size: 14px;
+    font-family: 'Gowun Dodum', sans-serif;
+  }
+
+  #traitsContainer {
+    margin-top: 6px;
+    min-height: 30px;
+  }
+  .traitTag {
+    display: inline-block;
+    background: #64b5f6;
+    color: white;
+    padding: 3px 7px;
+    margin: 3px 3px 0 0;
+    border-radius: 12px;
+    font-size: 13px;
+    cursor: default;
+    user-select: none;
+  }
+
+  #initialLikesContainer {
+    margin-top: 8px;
+    max-height: 80px;
+    overflow-y: auto;
+    font-size: 12px;
+  }
+  #initialLikesContainer div {
+    margin-bottom: 4px;
+  }
+
+  #addCharBtn, #cancelEditBtn {
+    margin-top: 10px;
+    padding: 8px 12px;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+  }
+  #addCharBtn {
+    background: #1976d2;
     color: white;
   }
-  .arrow-btn:disabled {
-    background: #a0b9de;
-    cursor: default;
+  #addCharBtn:hover {
+    background: #0d47a1;
   }
-  .inline-input {
-    width: 60px;
-    text-align: center;
+  #cancelEditBtn {
+    background: #ef5350;
+    color: white;
+    display: none;
+  }
+  #cancelEditBtn:hover {
+    background: #b71c1c;
+  }
+
+  #rightPanel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  }
+
+  #relationCanvas {
+    width: 100%;
+    height: 280px;
+    border-bottom: 1px solid #cfd8dc;
+    background: #e3f2fd;
+    border-radius: 10px 10px 0 0;
+  }
+
+  #buttonsRow {
+    padding: 10px 14px;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-start;
+    background: #f0f7ff;
+    border-bottom: 1px solid #cfd8dc;
+  }
+  #buttonsRow button {
+    padding: 8px 12px;
+    font-weight: 700;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
     font-size: 14px;
-    border-radius: 8px;
-    border: 1.5px solid #aac9e6;
-    padding: 4px;
-    font-family: 'Gowun Dodum', sans-serif;
+    background: #1976d2;
+    color: white;
+    transition: background-color 0.2s ease;
+  }
+  #buttonsRow button:hover {
+    background: #0d47a1;
+  }
+
+  #dateTitle {
+    font-weight: 700;
+    font-size: 18px;
+    margin: 10px 16px 6px 16px;
+    color: #0d47a1;
+  }
+
+  #dayLog {
+    flex: 1;
+    padding: 10px 16px;
+    font-size: 14px;
+    line-height: 1.5em;
+    overflow-y: auto;
+    color: #222;
+    white-space: pre-line;
+  }
+
+  .popup {
+    border-radius: 12px;
+    padding: 8px 14px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    box-shadow: 0 0 8px rgba(0,0,0,0.12);
+    user-select: none;
+  }
+  .popup.event {
+    background: #bbdefb;
+    border: 2px solid #1976d2;
+    color: #0d47a1;
+  }
+  .popup.relationChange {
+    background: #ce93d8;
+    border: 2px solid #7b1fa2;
+    color: #4a148c;
+  }
+  .popup.likeUp {
+    background: #81d4fa;
+    border: 2px solid #0288d1;
+    color: #01579b;
+  }
+  .popup.likeDown {
+    background: #ef9a9a;
+    border: 2px solid #d32f2f;
+    color: #b71c1c;
   }
 </style>
 </head>
 <body>
-  <div id="leftPane">
-    <h1>여름 청춘 시뮬레이터</h1>
-    <div class="flexRow" style="justify-content:center; margin-bottom:8px;">
-      <button id="toggleStudentListBtn">학생 명단 보기</button>
-      <button id="toggleRelationBtn">관계도 보기</button>
-    </div>
-    <div id="studentManagement">
-      <div id="studentList" class="student-list"></div>
 
+<header>여름 청춘 시뮬레이터</header>
+<main>
+  <section id="leftPanel">
+    <div id="studentList"></div>
+    <div id="formContainer">
+      <h3 id="formTitle">캐릭터 추가</h3>
       <form id="charForm">
-        <h2 id="formTitle">캐릭터 추가</h2>
-        <label>이름 <input type="text" id="charName" required /></label>
-        <label>나이 <input type="number" id="charAge" min="10" max="30" value="16" required /></label>
-        <label>학년 
-          <select id="charGrade" required>
-            <option value="1">1학년</option>
-            <option value="2">2학년</option>
-            <option value="3">3학년</option>
-            <option value="졸업생">졸업생</option>
-          </select>
-        </label>
-        <label>성격 키워드 <small>(Enter로 추가)</small></label>
-        <input type="text" id="charTraitsInput" placeholder="예: 밝음, 내성적" />
-        <div class="tag-container" id="charTraits"></div>
+        <label>이름</label>
+        <input type="text" id="charNameInput" required autocomplete="off" />
+        <label>나이</label>
+        <input type="number" id="charAgeInput" min="10" max="30" required />
+        <label>학년</label>
+        <select id="charGradeSelect">
+          <option value="1">1학년</option>
+          <option value="2">2학년</option>
+          <option value="3">3학년</option>
+        </select>
+        <label>성격 키워드 (엔터로 추가)</label>
+        <input type="text" id="traitInput" autocomplete="off" placeholder="성격 키워드를 입력 후 엔터" />
+        <div id="traitsContainer"></div>
         <label>초기 호감도 설정</label>
-        <div id="initialLikesContainer"></div>
-        <div style="margin-top:8px;">
-          <button type="submit" id="addCharBtn">추가</button>
-          <button type="button" id="cancelEditBtn" style="display:none; margin-left: 6px;">취소</button>
-        </div>
+        <div id="initialLikesContainer" style="font-size:13px;"></div>
+        <button id="addCharBtn" type="submit">추가</button>
+        <button id="cancelEditBtn" type="button">취소</button>
       </form>
     </div>
+  </section>
 
-    <canvas id="relationCanvas" width="380" height="400" style="display:none; margin-top: 12px;"></canvas>
-  </div>
-
-  <div id="rightPane">
-    <div id="dateTitle">3월 2일 (봄) - 입학식</div>
-    <div id="dayLog" tabindex="0" aria-label="하루 일과 기록"></div>
-    <div id="controls">
+  <section id="rightPanel">
+    <canvas id="relationCanvas"></canvas>
+    <div id="buttonsRow">
+      <button id="toggleStudentListBtn">학생 명단</button>
+      <button id="toggleRelationBtn">관계도</button>
       <button id="nextDayBtn">다음 날</button>
-      <button id="clearLogBtn" title="기록 삭제 (서사 유지)">🗑️ 기록 삭제</button>
+      <button id="clearLogBtn">기록 삭제</button>
     </div>
-  </div>
+    <div id="dateTitle"></div>
+    <div id="dayLog"></div>
+  </section>
+</main>
 
 <script>
-  // 초기 상태
+  // 상태 저장
   const state = {
-    currentDate: new Date(2024, 2, 2), // 3월 2일 시작 (월은 0부터)
     characters: [],
-    logs: [],
     editingIndex: null,
-    showRelation: false,
-    events: [
-      { start: '2024-04-21', end: '2024-04-24', name: '1학기 중간고사' },
-      { start: '2024-06-14', end: '2024-06-18', name: '1학기 기말고사' },
-      { start: '2024-07-02', end: '2024-08-01', name: '여름방학' },
-      { start: '2024-08-23', end: '2024-08-25', name: '수학여행' },
-      { start: '2024-09-04', end: '2024-09-04', name: '체육대회' },
-      { start: '2024-10-21', end: '2024-10-25', name: '2학기 중간고사' },
-      { start: '2024-12-11', end: '2024-12-15', name: '2학기 기말고사' },
-      { start: '2025-02-14', end: '2025-02-14', name: '종업식/졸업식' },
-      { start: '2025-02-15', end: '2025-03-01', name: '봄방학' }
-    ],
-    seasons: ['겨울', '봄', '여름', '가을'],
+    currentDate: new Date(2025, 2, 2), // 3월 2일부터 시작 (월은 0부터)
+    logs: [],
+    traitsUsedToday: new Set(),
   };
 
-  // 헬퍼 - 날짜 문자열 "YYYY-MM-DD"로 변환
-  function toDateStr(date) {
-    const y = date.getFullYear();
-    const m = ('0' + (date.getMonth()+1)).slice(-2);
-    const d = ('0' + date.getDate()).slice(-2);
-    return `${y}-${m}-${d}`;
-  }
+  // 이벤트 일정
+  const events = [
+    {name: '입학식', start: '2025-03-02', end: '2025-03-02'},
+    {name: '1학기 중간고사', start: '2025-04-21', end: '2025-04-24'},
+    {name: '1학기 기말고사', start: '2025-06-14', end: '2025-06-18'},
+    {name: '여름방학', start: '2025-07-02', end: '2025-08-01'},
+    {name: '수학여행', start: '2025-08-23', end: '2025-08-25'},
+    {name: '체육대회', start: '2025-09-04', end: '2025-09-04'},
+    {name: '2학기 중간고사', start: '2025-10-21', end: '2025-10-25'},
+    {name: '2학기 기말고사', start: '2025-12-11', end: '2025-12-15'},
+    {name: '종업식/졸업식', start: '2026-02-14', end: '2026-02-14'},
+    {name: '봄방학', start: '2026-02-15', end: '2026-03-01'},
+  ];
 
-  // 헬퍼 - 계절 반환
-  function getSeason(date) {
-    const m = date.getMonth()+1;
-    if (m >= 3 && m <=5) return '봄';
-    if (m >= 6 && m <=8) return '여름';
-    if (m >= 9 && m <=11) return '가을';
-    return '겨울';
-  }
-
-  // 이벤트 여부 확인
-  function getEventForDate(date) {
-    const ds = toDateStr(date);
-    for (const e of state.events) {
-      if (ds >= e.start && ds <= e.end) return e.name;
-    }
-    return null;
-  }
-
-  // 학년 전환 및 졸업 처리
-  function promoteGrades() {
-    state.characters.forEach(c => {
-      if(c.grade === 1) c.grade = 2;
-      else if(c.grade === 2) c.grade = 3;
-      else if(c.grade === 3) c.grade = '졸업생';
-    });
-  }
-
-  // 관계 상태 계산
-  function getRelationStatus(likeA, likeB) {
-    if(likeA >= 80 && likeB >= 80) return '약혼자';
-    if(likeA >= 50 && likeB >= 50) return '연인';
-    if(likeA >= 20 && likeB >= 20) return '썸';
-    if(likeA >= 20) return '짝사랑';
-    return '관심없음';
-  }
-
-  // 태그 추가 UI
-  const charTraitsInput = document.getElementById('charTraitsInput');
-  const charTraitsDiv = document.getElementById('charTraits');
-  let currentTraits = [];
-
-  charTraitsInput.addEventListener('keydown', e => {
-    if(e.key === 'Enter' && charTraitsInput.value.trim() !== '') {
-      e.preventDefault();
-      addTrait(charTraitsInput.value.trim());
-      charTraitsInput.value = '';
-    }
-  });
-
-  function addTrait(trait){
-    if(!currentTraits.includes(trait)){
-      currentTraits.push(trait);
-      renderTraits();
-    }
-  }
-
-  function removeTrait(trait){
-    currentTraits = currentTraits.filter(t => t !== trait);
-    renderTraits();
-  }
-
-  function renderTraits(){
-    charTraitsDiv.innerHTML = '';
-    currentTraits.forEach(t => {
-      const tag = document.createElement('span');
-      tag.className = 'tag';
-      tag.textContent = t;
-      tag.onclick = () => removeTrait(t);
-      charTraitsDiv.appendChild(tag);
-    });
-  }
-
-  // 초기 호감도 설정 UI 업데이트
-  const initialLikesContainer = document.getElementById('initialLikesContainer');
-  function updateInitialLikesUI(){
-    initialLikesContainer.innerHTML = '';
-    state.characters.forEach(c => {
-      const div = document.createElement('div');
-      div.style.marginBottom = '4px';
-      const label = document.createElement('label');
-      label.textContent = `${c.name}에 대한 호감도: `;
-      const input = document.createElement('input');
-      input.type = 'number';
-      input.min = -50;
-      input.max = 100;
-      input.value = 0;
-      input.style.width = '50px';
-      input.dataset.target = c.name;
-      div.appendChild(label);
-      div.appendChild(input);
-      initialLikesContainer.appendChild(div);
-    });
-  }
-
-  // 캐릭터 추가/수정 폼
+  // DOM
+  const studentListDiv = document.getElementById('studentList');
+  const formTitle = document.getElementById('formTitle');
   const charForm = document.getElementById('charForm');
-  const charNameInput = document.getElementById('charName');
-  const charAgeInput = document.getElementById('charAge');
-  const charGradeSelect = document.getElementById('charGrade');
+  const charNameInput = document.getElementById('charNameInput');
+  const charAgeInput = document.getElementById('charAgeInput');
+  const charGradeSelect = document.getElementById('charGradeSelect');
+  const traitInput = document.getElementById('traitInput');
+  const traitsContainer = document.getElementById('traitsContainer');
+  const initialLikesContainer = document.getElementById('initialLikesContainer');
   const addCharBtn = document.getElementById('addCharBtn');
   const cancelEditBtn = document.getElementById('cancelEditBtn');
-  const formTitle = document.getElementById('formTitle');
 
-  // 관계도와 학생명단 토글
-  const toggleRelationBtn = document.getElementById('toggleRelationBtn');
-  const toggleStudentListBtn = document.getElementById('toggleStudentListBtn');
   const relationCanvas = document.getElementById('relationCanvas');
-  const studentListDiv = document.getElementById('studentList');
+  const toggleStudentListBtn = document.getElementById('toggleStudentListBtn');
+  const toggleRelationBtn = document.getElementById('toggleRelationBtn');
+  const nextDayBtn = document.getElementById('nextDayBtn');
+  const clearLogBtn = document.getElementById('clearLogBtn');
+  const dateTitle = document.getElementById('dateTitle');
+  const dayLog = document.getElementById('dayLog');
 
-  toggleRelationBtn.addEventListener('click', () => {
-    state.showRelation = true;
-    renderRelationCanvas();
-    relationCanvas.style.display = 'block';
-    studentListDiv.style.display = 'none';
-    toggleRelationBtn.disabled = true;
-    toggleStudentListBtn.disabled = false;
-  });
+  // 스크롤 및 토글용
+  let showStudentList = true;
+  let showRelation = true;
+
   toggleStudentListBtn.addEventListener('click', () => {
-    state.showRelation = false;
-    relationCanvas.style.display = 'none';
-    studentListDiv.style.display = 'grid';
-    toggleRelationBtn.disabled = false;
-    toggleStudentListBtn.disabled = true;
+    showStudentList = !showStudentList;
+    studentListDiv.style.display = showStudentList ? 'grid' : 'none';
   });
+  toggleRelationBtn.addEventListener('click', () => {
+    showRelation = !showRelation;
+    relationCanvas.style.display = showRelation ? 'block' : 'none';
+  });
+
+  // 성격 키워드 배열
+  let currentTraits = [];
+
+  // traitsContainer 렌더링
+  function renderTraits(){
+    traitsContainer.innerHTML = '';
+    currentTraits.forEach((t,i) => {
+      const span = document.createElement('span');
+      span.className = 'traitTag';
+      span.textContent = t;
+      span.title = '클릭해서 삭제';
+      span.onclick = () => {
+        currentTraits.splice(i, 1);
+        renderTraits();
+      };
+      traitsContainer.appendChild(span);
+    });
+  }
+
+  // traitInput 엔터 입력 시 키워드 추가
+  traitInput.addEventListener('keydown', e => {
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      let val = traitInput.value.trim();
+      if(val){
+        // 쉼표가 있으면 자르기
+        val = val.split(',')[0].trim();
+        if(val && !currentTraits.includes(val)){
+          currentTraits.push(val);
+          renderTraits();
+        }
+        traitInput.value = '';
+      }
+    }
+  });
+
+  // 초기호감도 UI 업데이트
+  function updateInitialLikesUI(){
+    initialLikesContainer.innerHTML = '';
+    if(state.editingIndex === null) {
+      // 새 추가 시 - 모두 0
+      state.characters.forEach(char => {
+        const div = document.createElement('div');
+        div.style.marginBottom = '4px';
+        const label = document.createElement('label');
+        label.textContent = `${char.name}에 대한 호감도: `;
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.min = -50;
+        input.max = 100;
+        input.value = 0;
+        input.style.width = '50px';
+        input.dataset.target = char.name;
+        div.appendChild(label);
+        div.appendChild(input);
+        initialLikesContainer.appendChild(div);
+      });
+    } else {
+      // 수정 시 - 기존 관계 불러오기
+      const char = state.characters[state.editingIndex];
+      state.characters.forEach(targetChar => {
+        if(targetChar.name === char.name) return;
+        const div = document.createElement('div');
+        div.style.marginBottom = '4px';
+        const label = document.createElement('label');
+        label.textContent = `${targetChar.name}에 대한 호감도: `;
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.min = -50;
+        input.max = 100;
+        input.value = char.relationships[targetChar.name] || 0;
+        input.style.width = '50px';
+        input.dataset.target = targetChar.name;
+        div.appendChild(label);
+        div.appendChild(input);
+        initialLikesContainer.appendChild(div);
+      });
+    }
+  }
 
   // 학생 리스트 렌더링
-  function renderStudentList() {
+  function renderStudentList(){
     studentListDiv.innerHTML = '';
     state.characters.forEach((char, idx) => {
       const card = document.createElement('div');
-      card.className = 'student-card';
+      card.className = 'studentCard';
 
-      const nameDiv = document.createElement('div');
-      nameDiv.className = 'student-name';
-      nameDiv.textContent = char.name;
-      card.appendChild(nameDiv);
+      const title = document.createElement('h4');
+      title.textContent = `${char.name} (${char.grade}학년, ${char.age}세)`;
+      card.appendChild(title);
 
-      const infoDiv = document.createElement('div');
-      infoDiv.className = 'student-info';
-      infoDiv.textContent = `${char.age}세, ${char.grade} / 성격: ${char.traits.join(', ') || '없음'}`;
-      card.appendChild(infoDiv);
-
-      // 초기 호감도 요약 표시
-      const likeSummary = [];
-      for(const target of state.characters){
-        if(char.relationships[target.name] !== undefined){
-          likeSummary.push(`${target.name}: ${char.relationships[target.name]}`);
-        }
+      if(char.traits.length > 0){
+        const traitDiv = document.createElement('div');
+        traitDiv.className = 'traits';
+        traitDiv.textContent = '성격: ' + char.traits.join(', ');
+        card.appendChild(traitDiv);
       }
+
+      // 관계 상태 요약: 호감도+관계명
       const relDiv = document.createElement('div');
-      relDiv.style.fontSize = '12px';
-      relDiv.style.color = '#6a7a91';
-      relDiv.textContent = '호감도 → ' + (likeSummary.length > 0 ? likeSummary.join(', ') : '없음');
+      relDiv.className = 'relStatus';
+      let relStr = '';
+      for(let targetName in char.relationships){
+        const val = char.relationships[targetName];
+        if(val >= 80) relStr += `${targetName}: 약혼자 (${val})\n`;
+        else if(val >= 50) relStr += `${targetName}: 연인 (${val})\n`;
+        else if(val >= 20) relStr += `${targetName}: 썸 (${val})\n`;
+        else if(val > 0) relStr += `${targetName}: 짝사랑 (${val})\n`;
+        else if(val < 0) relStr += `${targetName}: 적대 (${val})\n`;
+      }
+      relDiv.textContent = relStr.trim();
       card.appendChild(relDiv);
 
-      // 수정, 삭제 버튼
-      const btnDiv = document.createElement('div');
-      btnDiv.style.marginTop = '8px';
+      // 수정/삭제 버튼
+      const btnGroup = document.createElement('div');
+      btnGroup.className = 'btn-group';
       const editBtn = document.createElement('button');
-      editBtn.textContent = '수정';
       editBtn.className = 'btn-small';
-      editBtn.onclick = () => startEditCharacter(idx);
-      btnDiv.appendChild(editBtn);
+      editBtn.textContent = '수정';
+      editBtn.onclick = () => editCharacter(idx);
+      btnGroup.appendChild(editBtn);
 
       const delBtn = document.createElement('button');
-      delBtn.textContent = '삭제';
       delBtn.className = 'btn-small btn-danger';
+      delBtn.textContent = '삭제';
       delBtn.onclick = () => {
-        if(confirm(`${char.name}을(를) 정말 삭제할까요?`)){
-          state.characters.splice(idx, 1);
-          updateInitialLikesUI();
+        if(confirm(`${char.name} 캐릭터를 삭제하시겠습니까?`)){
+          state.characters.splice(idx,1);
+          // 삭제 시 다른 캐릭터 관계에서도 제거
+          state.characters.forEach(c => {
+            delete c.relationships[char.name];
+          });
+          if(state.editingIndex === idx) {
+            resetForm();
+          }
           renderStudentList();
-          renderRelationCanvas();
+          drawRelation();
         }
       };
-      btnDiv.appendChild(delBtn);
+      btnGroup.appendChild(delBtn);
 
-      card.appendChild(btnDiv);
-
+      card.appendChild(btnGroup);
       studentListDiv.appendChild(card);
     });
   }
 
-  // 캐릭터 편집 시작
-  function startEditCharacter(idx) {
-    state.editingIndex = idx;
+  // 관계도 캔버스 초기화
+  const ctx = relationCanvas.getContext('2d');
+  function resizeCanvas(){
+    relationCanvas.width = relationCanvas.clientWidth * devicePixelRatio;
+    relationCanvas.height = relationCanvas.clientHeight * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }
+  window.addEventListener('resize', () => {
+    resizeCanvas();
+    drawRelation();
+  });
+
+  // 관계도 그리기
+  function drawRelation(){
+    if(!showRelation) return;
+    resizeCanvas();
+    const w = relationCanvas.clientWidth;
+    const h = relationCanvas.clientHeight;
+    ctx.clearRect(0, 0, w, h);
+    ctx.font = '13px Gowun Dodum, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    const n = state.characters.length;
+    if(n === 0) return;
+
+    const centerX = w/2;
+    const centerY = h/2;
+    const radius = Math.min(w,h)/2 - 70;
+    const nodeRadius = 30;
+
+    // 위치 계산
+    const pos = [];
+    for(let i=0; i<n; i++){
+      const angle = (2*Math.PI/n)*i - Math.PI/2;
+      pos.push({
+        x: centerX + radius * Math.cos(angle),
+        y: centerY + radius * Math.sin(angle),
+        angle
+      });
+    }
+
+    // 선과 화살표 그리기 함수
+    function drawArrow(ctx,x1,y1,x2,y2,color='#82a4d4'){
+      const headlen = 10;
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const angle = Math.atan2(dy, dx);
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - headlen * Math.cos(angle - Math.PI/6), y2 - headlen * Math.sin(angle - Math.PI/6));
+      ctx.lineTo(x2 - headlen * Math.cos(angle + Math.PI/6), y2 - headlen * Math.sin(angle + Math.PI/6));
+      ctx.lineTo(x2, y2);
+      ctx.fill();
+    }
+
+    // 노드 그리기 함수
+    function drawNode(x,y,text){
+      ctx.fillStyle = '#bbdefb';
+      ctx.strokeStyle = '#1976d2';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.ellipse(x, y, nodeRadius, nodeRadius, 0, 0, 2*Math.PI);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#0d47a1';
+      ctx.font = 'bold 14px Gowun Dodum, sans-serif';
+      ctx.fillText(text, x, y);
+    }
+
+    // 노드 위치 저장
+    state.characters.forEach((char,i) => {
+      char._pos = pos[i];
+    });
+
+    // 관계선 그리기
+    for(let i=0; i<n; i++){
+      const fromChar = state.characters[i];
+      const fromPos = fromChar._pos;
+      for(let targetName in fromChar.relationships){
+        const toChar = state.characters.find(c=>c.name===targetName);
+        if(!toChar) continue;
+        const toPos = toChar._pos;
+        if(!toPos) continue;
+
+        const val = fromChar.relationships[targetName];
+        // 색상
+        let color = '#82a4d4'; // 기본 파랑
+        if(val >= 50) color = '#1463bf'; // 파랑 진함
+        else if(val < 0) color = '#d14646'; // 빨강
+        else color = '#82a4d4'; // 연한 파랑
+
+        // 선의 시작점과 끝점 조정 (노드 반지름만큼 뺌)
+        const angle = Math.atan2(toPos.y - fromPos.y, toPos.x - fromPos.x);
+        const startX = fromPos.x + 30 * Math.cos(angle);
+        const startY = fromPos.y + 30 * Math.sin(angle);
+        const endX = toPos.x - 30 * Math.cos(angle);
+        const endY = toPos.y - 30 * Math.sin(angle);
+
+        drawArrow(ctx, startX, startY, endX, endY, color);
+
+        // 호감도 텍스트
+        ctx.fillStyle = color;
+        ctx.font = '12px Gowun Dodum, sans-serif';
+        const midX = (startX + endX)/2;
+        const midY = (startY + endY)/2 - 12;
+        ctx.fillText(val, midX, midY);
+      }
+    }
+
+    // 노드 그리기
+    state.characters.forEach((char,i) => {
+      drawNode(char._pos.x, char._pos.y, char.name);
+    });
+  }
+
+  // 초기화 (폼)
+  function resetForm(){
+    formTitle.textContent = '캐릭터 추가';
+    charNameInput.value = '';
+    charAgeInput.value = '';
+    charGradeSelect.value = '1';
+    currentTraits = [];
+    renderTraits();
+    initialLikesContainer.innerHTML = '';
+    addCharBtn.textContent = '추가';
+    cancelEditBtn.style.display = 'none';
+    state.editingIndex = null;
+    updateInitialLikesUI();
+  }
+
+  // 캐릭터 수정 폼에 채우기
+  function editCharacter(idx){
     const char = state.characters[idx];
     formTitle.textContent = '캐릭터 수정';
     charNameInput.value = char.name;
@@ -492,413 +665,351 @@
     charGradeSelect.value = char.grade;
     currentTraits = [...char.traits];
     renderTraits();
-
-    // 초기 호감도 세팅 - 각 타겟에 맞게 값 세팅
-    initialLikesContainer.innerHTML = '';
-    state.characters.forEach(targetChar => {
-      if(targetChar.name === char.name) return; // 자기 자신 제외
-      const div = document.createElement('div');
-      div.style.marginBottom = '4px';
-      const label = document.createElement('label');
-      label.textContent = `${targetChar.name}에 대한 호감도: `;
-      const input = document.createElement('input');
-      input.type = 'number';
-      input.min = -50;
-      input.max = 100;
-      input.value = char.relationships[targetChar.name] || 0;
-      input.style.width = '50px';
-      input.dataset.target = targetChar.name;
-      div.appendChild(label);
-      div.appendChild(input);
-      initialLikesContainer.appendChild(div);
-    });
-
-    addCharBtn.textContent = '저장';
+    state.editingIndex = idx;
+    addCharBtn.textContent = '수정';
     cancelEditBtn.style.display = 'inline-block';
+    updateInitialLikesUI();
   }
 
-  // 편집 취소
   cancelEditBtn.addEventListener('click', () => {
     resetForm();
   });
 
-  // 폼 초기화
-  function resetForm(){
-    charForm.reset();
-    currentTraits = [];
-    renderTraits();
-    initialLikesContainer.innerHTML = '';
-    state.editingIndex = null;
-    formTitle.textContent = '캐릭터 추가';
-    addCharBtn.textContent = '추가';
-    cancelEditBtn.style.display = 'none';
-    updateInitialLikesUI();
-  }
-
-  // 캐릭터 추가/수정 제출 처리
+  // 폼 제출
   charForm.addEventListener('submit', e => {
     e.preventDefault();
     const name = charNameInput.value.trim();
     const age = parseInt(charAgeInput.value);
-    let grade = charGradeSelect.value;
-    if(['1','2','3'].includes(grade)) grade = parseInt(grade);
+    const grade = parseInt(charGradeSelect.value);
 
-    if(!name) {
-      alert('이름을 입력해주세요.');
+    if(!name){
+      alert('이름을 입력하세요.');
+      return;
+    }
+    if(age < 10 || age > 30){
+      alert('나이를 10~30 사이로 입력하세요.');
       return;
     }
 
-    // 새 캐릭터 생성
-    const newChar = {
-      name,
-      age,
-      grade,
-      traits: [...currentTraits],
-      relationships: {}, // 상대 호감도 초기화는 아래서
-      status: '정상', // 상태: 정상, 졸업생 등
-    };
-
-    // 호감도 초기값 세팅
-    const inputs = initialLikesContainer.querySelectorAll('input[type=number]');
-    inputs.forEach(input => {
-      const target = input.dataset.target;
-      const val = parseInt(input.value) || 0;
-      newChar.relationships[target] = val;
-    });
-
-    if(state.editingIndex !== null){
-      // 수정 중이면 기존 데이터 덮어쓰기
-      // 이름 바꾸면 관계도 업데이트 필요
-      const oldName = state.characters[state.editingIndex].name;
-      state.characters[state.editingIndex] = newChar;
-
-      // 관계도에서 oldName 키를 새 이름으로 변경
-      if(oldName !== newChar.name){
-        state.characters.forEach(c => {
-          if(c.relationships[oldName] !== undefined){
-            c.relationships[newChar.name] = c.relationships[oldName];
-            delete c.relationships[oldName];
-          }
-        });
+    if(state.editingIndex === null){
+      // 중복 이름 체크
+      if(state.characters.some(c=>c.name===name)){
+        alert('이미 존재하는 이름입니다.');
+        return;
       }
-    } else {
-      // 새로 추가 시, 기존 캐릭터들의 관계도에 새 캐릭터 반영 (0으로)
-      state.characters.forEach(c => {
-        c.relationships[newChar.name] = 0;
+      // 추가
+      const newChar = {
+        name,
+        age,
+        grade,
+        traits: [...currentTraits],
+        relationships: {},
+        status: '학생',
+      };
+      // 초기호감도 설정
+      Array.from(initialLikesContainer.querySelectorAll('input')).forEach(input => {
+        const target = input.dataset.target;
+        const val = Number(input.value) || 0;
+        newChar.relationships[target] = val;
       });
+
+      // 반대로 기존 캐릭터들도 새 캐릭터에 대한 호감도 0으로 세팅
+      state.characters.forEach(c=>{
+        c.relationships[name] = 0;
+      });
+
       state.characters.push(newChar);
-    }
-
-    resetForm();
-    updateInitialLikesUI();
-    renderStudentList();
-    renderRelationCanvas();
-  });
-
-  // 날짜와 이벤트 제목 업데이트
-  const dateTitle = document.getElementById('dateTitle');
-  function updateDateTitle(){
-    const season = getSeason(state.currentDate);
-    const ymd = `${state.currentDate.getMonth()+1}월 ${state.currentDate.getDate()}일 (${season})`;
-    const eventName = getEventForDate(state.currentDate);
-    dateTitle.textContent = eventName ? `${ymd} - ${eventName}` : ymd;
-  }
-
-  // 로그 출력영역
-  const dayLog = document.getElementById('dayLog');
-  const nextDayBtn = document.getElementById('nextDayBtn');
-  const clearLogBtn = document.getElementById('clearLogBtn');
-
-  // 로그에 텍스트 추가 (이벤트/관계 변화 시 다르게 출력)
-  function addLogEntry(text, type='normal'){
-    const p = document.createElement('p');
-    p.textContent = text;
-    if(type === 'event'){
-      p.className = 'eventPopup';
-    } else if(type === 'relationChange'){
-      p.className = 'relationChangePopup';
-    }
-    dayLog.appendChild(p);
-    dayLog.scrollTop = dayLog.scrollHeight;
-  }
-
-  // 고백 이벤트 처리
-  function handleConfession(charA, charB){
-    if(charA.relationships[charB.name] >= 50 && charB.relationships[charA.name] >= 30){
-      addLogEntry(`🌸관계도 이벤트 등장🌸\n${charA.name}은(는) ${charB.name}에게 고백했고, 상대도 받아주었습니다.`, 'event');
-      // 연인 관계로 변화
-      charA.relationships[charB.name] = 50;
-      charB.relationships[charA.name] = 50;
-      return true;
-    }
-    return false;
-  }
-
-  // 관계 변화 검사 (호감도 변화 + 이벤트 발생)
-  function checkRelationshipChanges(){
-    for(let i=0; i<state.characters.length; i++){
-      const cA = state.characters[i];
-      for(let j=0; j<state.characters.length; j++){
-        if(i===j) continue;
-        const cB = state.characters[j];
-        const oldStatus = getRelationStatus(
-          cA.relationships[cB.name] || 0,
-          cB.relationships[cA.name] || 0);
-        // 호감도 랜덤 감소 5% 확률
-        if(Math.random() < 0.05 && (cA.relationships[cB.name] || 0) > 0){
-          cA.relationships[cB.name] = Math.max(0, (cA.relationships[cB.name] || 0) - 1);
-        }
-        const newStatus = getRelationStatus(
-          cA.relationships[cB.name] || 0,
-          cB.relationships[cA.name] || 0);
-        if(oldStatus !== newStatus){
-          addLogEntry(`💔 관계 변화: ${cA.name}과(와) ${cB.name}은(는) '${oldStatus}'에서 '${newStatus}' 상태가 되었습니다.`, 'relationChange');
-          // 관계 변화 추가 이벤트
-          if(newStatus === '썸'){
-            addLogEntry(`${cA.name}은(는) ${cB.name}를 볼 때마다 어쩐지 가슴 한 켠이 아려오는 듯 했습니다. 하지만 상대에게 들키고 싶지 않습니다.`, 'event');
-          }
-        }
-      }
-    }
-  }
-
-  // 하루 일과 생성 (계절+이벤트+성격 반영)
-  function generateDailyNarrative(){
-    const date = state.currentDate;
-    const season = getSeason(date);
-    const eventName = getEventForDate(date);
-
-    const narratives = [];
-    const chars = state.characters;
-
-    // 계절별 문장 예시
-    const seasonPhrases = {
-      봄: ['따뜻한 햇살이 교실을 감싸고 있었다.', '꽃들이 만개해 활기가 넘쳤다.', '부드러운 봄바람이 불어왔다.'],
-      여름: ['무더운 햇볕이 학교 운동장을 내리쬐었다.', '시원한 바람을 기다리는 학생들.', '햇빛이 강하게 내리쬐는 여름날.'],
-      가을: ['낙엽이 바람에 흩날렸다.', '시원한 가을 공기가 교실 안을 감쌌다.', '붉은 단풍잎들이 빛나고 있었다.'],
-      겨울: ['차가운 바람이 불어왔다.', '눈이 소복이 쌓여 조용한 학교.', '따뜻한 난로 곁에 모여들었다.'],
-    };
-
-    // 이벤트별 문장
-    const eventPhrases = {
-      '입학식': '새로운 시작을 알리는 입학식이 열렸다.',
-      '1학기 중간고사': '1학기 중간고사 기간이라 모두가 열심히 공부 중이다.',
-      '1학기 기말고사': '1학기 기말고사를 앞두고 긴장감이 돌았다.',
-      '여름방학': '기다리던 여름방학이 시작되었다.',
-      '수학여행': '수학여행으로 모두가 들떠 있었다.',
-      '체육대회': '체육대회에서 친구들과 경쟁하며 즐거운 시간을 보냈다.',
-      '2학기 중간고사': '2학기 중간고사를 준비하며 밤낮없이 공부했다.',
-      '2학기 기말고사': '2학기 기말고사가 끝나고 모두가 한숨을 내쉬었다.',
-      '종업식/졸업식': '한 해의 끝을 알리는 종업식과 졸업식이 진행되었다.',
-      '봄방학': '봄방학 동안 휴식을 취하며 재충전했다.'
-    };
-
-    // 각 캐릭터별 랜덤 서술 문장 (성격 반영)
-    chars.forEach(char => {
-      if(char.grade === '졸업생') return; // 졸업생은 따로 처리
-
-      let traitPhrase = '';
-      if(char.traits.length > 0){
-        const trait = char.traits[Math.floor(Math.random()*char.traits.length)];
-        traitPhrase = `${char.name}은(는) 오늘도 ${trait}한 모습으로 하루를 보냈다.`;
-      } else {
-        traitPhrase = `${char.name}은(는) 평범한 하루를 보냈다.`;
-      }
-      narratives.push(traitPhrase);
-    });
-
-    // 계절 문장 1개 랜덤 추가
-    if(seasonPhrases[season]){
-      narratives.unshift(seasonPhrases[season][Math.floor(Math.random()*seasonPhrases[season].length)]);
-    }
-
-    // 이벤트 문장 있으면 앞에 추가
-    if(eventName && eventPhrases[eventName]){
-      narratives.unshift(eventPhrases[eventName]);
-    }
-
-    return narratives.join(' ');
-  }
-
-  // 2월 14일 졸업식 진로 질문
-  function showGraduationCareerQuestion(){
-    let gradChars = state.characters.filter(c => c.grade === 3);
-    if(gradChars.length === 0) return false;
-
-    gradChars.forEach(char => {
-      const careerQ = `🌸 ${char.name} 캐릭터는 이후에 어떻게 되었나요?\n1. 대학교에 입학한다.\n2. 대학교에 입학하지 않았다.`;
-      addLogEntry(careerQ, 'event');
-      // 대학교 미입학 선택시 질문 (여기서는 간단히 prompt 사용)
-      setTimeout(() => {
-        const answer = prompt(`${char.name}는 대학교에 입학했나요? (1: 입학, 2: 미입학)`);
-        if(answer === '2'){
-          const job = prompt(`${char.name} 캐릭터는 무엇이 되었나요? 직업을 적어주세요.`);
-          addLogEntry(`${char.name}은(는) 대학교에 입학하지 않고 '${job}'가 되었습니다.`, 'event');
-        } else if(answer === '1'){
-          addLogEntry(`${char.name}은(는) 대학교에 입학했습니다.`, 'event');
-        }
-        char.grade = '졸업생'; // 졸업 처리
-        renderStudentList();
-      }, 200);
-    });
-    return true;
-  }
-
-  // 다음 날 버튼 클릭 처리
-  nextDayBtn.addEventListener('click', () => {
-    // 2월 14일 졸업식 진로 질문 우선 처리
-    if(toDateStr(state.currentDate) === '2025-02-14'){
-      const showed = showGraduationCareerQuestion();
-      if(showed) return; // 질문 나오면 다음날 진행 중단
-    }
-
-    // 날짜 증가
-    state.currentDate.setDate(state.currentDate.getDate()+1);
-
-    // 1월 1일에 학년 진급 처리 (여기선 간단하게 1월 1일 학년 상승)
-    if(state.currentDate.getMonth() === 0 && state.currentDate.getDate() === 1){
-      promoteGrades();
-      addLogEntry('🎉 새해가 되어 학년이 진급했습니다!', 'event');
+      resetForm();
       renderStudentList();
+      drawRelation();
+    } else {
+      // 수정 (이름 중복 허용하지 않음, 자기 자신 제외)
+      if(state.characters.some((c,i) => c.name === name && i !== state.editingIndex)){
+        alert('이미 존재하는 이름입니다.');
+        return;
+      }
+
+      const char = state.characters[state.editingIndex];
+      // 학년은 수정 가능 (요청에 따라 폼에서 학년 선택 가능)
+      char.name = name;
+      char.age = age;
+      char.grade = grade;
+      char.traits = [...currentTraits];
+
+      // 초기호감도 수정 반영
+      Array.from(initialLikesContainer.querySelectorAll('input')).forEach(input => {
+        const target = input.dataset.target;
+        const val = Number(input.value) || 0;
+        char.relationships[target] = val;
+      });
+
+      // 이름 변경 시 다른 캐릭터 관계도 키 변경 (예: 이름 바뀌면)
+      // (단순화 위해 이름 변경시 관계도 초기화 권장)
+      // TODO: 필요하면 관계 키 동기화 코드 추가 가능
+
+      resetForm();
+      renderStudentList();
+      drawRelation();
     }
-
-    updateDateTitle();
-
-    // 하루 일과 생성
-    const narrative = generateDailyNarrative();
-    addLogEntry(narrative);
-
-    // 관계 변화 검사
-    checkRelationshipChanges();
-
-    // UI 갱신
-    renderStudentList();
-    renderRelationCanvas();
   });
 
-  // 기록 삭제 버튼
-  clearLogBtn.addEventListener('click', () => {
-    if(confirm('기록만 삭제하시겠습니까? 서사는 유지됩니다.')){
-      dayLog.innerHTML = '';
-      state.logs = [];
-    }
-  });
-
-  // 관계도 그리기 함수
-  const relationCanvasCtx = relationCanvas.getContext('2d');
-  function drawArrow(ctx, fromX, fromY, toX, toY) {
-    const headlen = 10;
-    const dx = toX - fromX;
-    const dy = toY - fromY;
-    const angle = Math.atan2(dy, dx);
-    ctx.beginPath();
-    ctx.moveTo(fromX, fromY);
-    ctx.lineTo(toX, toY);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(toX, toY);
-    ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
-    ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
-    ctx.lineTo(toX, toY);
-    ctx.fill();
+  // 날짜 포맷 함수
+  function formatDate(d){
+    const y = d.getFullYear();
+    const m = d.getMonth() +1;
+    const day = d.getDate();
+    return `${y}년 ${m}월 ${day}일`;
   }
-  function renderRelationCanvas(){
-    const ctx = relationCanvasCtx;
-    const canvas = relationCanvas;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const radius = 25;
-    const padding = 60;
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const count = state.characters.length;
-    if(count === 0) return;
-    const angleStep = (2 * Math.PI) / count;
-
-    let positions = [];
-
-    // 각 캐릭터 위치 계산 (원형 배치)
-    state.characters.forEach((char, i) => {
-      const angle = i * angleStep - Math.PI / 2; // 12시 방향부터 시작
-      const x = centerX + Math.cos(angle) * (canvas.width/2 - padding);
-      const y = centerY + Math.sin(angle) * (canvas.height/2 - padding);
-      positions.push({x, y, name: char.name});
+  // 오늘 이벤트 찾기
+  function getEventByDate(d){
+    const yyyyMMdd = d.toISOString().slice(0,10);
+    return events.find(ev=>{
+      return yyyyMMdd >= ev.start && yyyyMMdd <= ev.end;
     });
+  }
 
-    // 노드 그리기 (원과 이름)
-    positions.forEach(pos => {
-      ctx.fillStyle = '#bbe1fa';
-      ctx.strokeStyle = '#3282b8';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(pos.x, pos.y, radius, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.stroke();
+  // 날짜 -> 계절 (3~5: 봄, 6~8: 여름, 9~11: 가을, 12~2: 겨울)
+  function getSeason(d){
+    const m = d.getMonth() + 1;
+    if(m>=3 && m<=5) return '봄';
+    if(m>=6 && m<=8) return '여름';
+    if(m>=9 && m<=11) return '가을';
+    return '겨울';
+  }
 
-      // 이름 텍스트
-      ctx.fillStyle = '#0f4c75';
-      ctx.font = '16px Gowun Dodum, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(pos.name, pos.x, pos.y);
-    });
+  // 하루 일과 서술 생성기 (계절과 이벤트에 맞게, 성격키워드 최소 한두번만 등장)
+  function generateDailyNarrative(char, date, eventName){
+    const season = getSeason(date);
+    const baseSentences = [
+      `${char.name}은(는) 오늘도 평범한 하루를 보냈다.`,
+      `${char.name}은(는) 학교에서 친구들과 웃으며 시간을 보냈다.`,
+      `${char.name}은(는) ${season}의 분위기에 마음이 들떴다.`,
+      `${char.name}은(는) 새로운 경험을 갈망하며 하루를 시작했다.`,
+      `${char.name}은(는) 조용히 자신의 생각에 잠겼다.`,
+    ];
 
-    // 관계선 (화살표) 및 호감도 텍스트
-    ctx.fillStyle = '#3282b8';
-    ctx.strokeStyle = '#3282b8';
-    ctx.lineWidth = 2;
-    ctx.font = '14px Gowun Dodum, sans-serif';
+    const traitSentences = {
+      "활발한": [
+        `${char.name}은(는) 활발하게 움직이며 주변 사람들과 어울렸다.`,
+        `${char.name}은(는) 활기찬 모습으로 모두의 관심을 받았다.`,
+      ],
+      "내성적인": [
+        `${char.name}은(는) 조용히 혼자 시간을 보내며 생각에 잠겼다.`,
+        `${char.name}은(는) 내성적인 성격답게 깊은 대화를 나눴다.`,
+      ],
+      "친절한": [
+        `${char.name}은(는) 친구들에게 다정한 말 한마디를 건넸다.`,
+        `${char.name}은(는) 친절하게 도움을 주었다.`,
+      ],
+      "까다로운": [
+        `${char.name}은(는) 조금 까다롭게 행동하며 주변을 곤란하게 했다.`,
+        `${char.name}은(는) 완벽을 추구하며 조심스러웠다.`,
+      ],
+      "명랑한": [
+        `${char.name}은(는) 명랑한 웃음으로 모두를 즐겁게 했다.`,
+        `${char.name}은(는) 밝은 에너지로 분위기를 이끌었다.`,
+      ],
+      "조용한": [
+        `${char.name}은(는) 조용히 자리를 지키며 차분하게 행동했다.`,
+        `${char.name}은(는) 침착한 모습으로 친구들에게 신뢰를 받았다.`,
+      ],
+      // 기타 성격 키워드는 자유롭게 추가 가능
+    };
 
-    state.characters.forEach((char, i) => {
-      const from = positions[i];
-      Object.entries(char.relationships).forEach(([targetName, val]) => {
-        if(val !== undefined && val !== null && val !== 0){
-          const j = positions.findIndex(p => p.name === targetName);
-          if(j !== -1){
-            const to = positions[j];
-            // 화살표 시작점, 끝점 보정 (원 밖에서 시작, 원 밖에서 끝나도록)
-            const angle = Math.atan2(to.y - from.y, to.x - from.x);
-            const startX = from.x + radius * Math.cos(angle);
-            const startY = from.y + radius * Math.sin(angle);
-            const endX = to.x - radius * Math.cos(angle);
-            const endY = to.y - radius * Math.sin(angle);
+    const eventStudySentences = [
+      "열심히 공부를 했다.",
+      "어려운 문제에서 막히기도 했지만 포기하지 않았다.",
+      "집중해서 시험 준비를 했다.",
+      "긴장했지만 최선을 다했다.",
+      "교과서와 노트에 열심히 필기했다.",
+    ];
 
-            // 호감도에 따라 선 색깔 지정 (50 이상은 파란색, 음수는 붉은색)
-            if(val >= 50){
-              ctx.strokeStyle = '#1463bf';
-              ctx.fillStyle = '#1463bf';
-            } else if(val < 0) {
-              ctx.strokeStyle = '#d14646';
-              ctx.fillStyle = '#d14646';
-            } else {
-              ctx.strokeStyle = '#82a4d4';
-              ctx.fillStyle = '#82a4d4';
+    const eventTravelSentences = [
+      "비가 왔지만 우산을 가져오지 않았다.",
+      "그러나 친구가 우산을 같이 쓰자고 제안했다.",
+      "날씨는 흐렸지만 모두의 기분은 밝았다.",
+      "버스에서 친구들과 이야기를 나누며 웃었다.",
+    ];
+
+    // 한 날마다 성격 서술은 1~2개 정도만
+    let traitSentencesUsed = 0;
+
+    // 기본 서술 선택
+    let narrative = baseSentences[Math.floor(Math.random()*baseSentences.length)];
+
+    // 이벤트 서술
+    if(eventName){
+      if(eventName.includes('중간고사') || eventName.includes('기말고사')){
+        narrative += ' ' + eventStudySentences[Math.floor(Math.random()*eventStudySentences.length)];
+      }
+      if(eventName.includes('수학여행')){
+        narrative += ' ' + eventTravelSentences[Math.floor(Math.random()*eventTravelSentences.length)];
+      }
+      if(eventName.includes('방학')){
+        narrative += ' 방학이라 평소보다 여유로운 시간을 보냈다.';
+      }
+      if(eventName.includes('체육대회')){
+        narrative += ' 체육대회에서 친구들과 즐겁게 운동했다.';
+      }
+      if(eventName.includes('입학식')){
+        narrative += ' 새로운 시작을 축하하며 입학식을 치렀다.';
+      }
+      if(eventName.includes('종업식') || eventName.includes('졸업식')){
+        narrative += ' 졸업식을 맞아 감회가 새로웠다.';
+      }
+    }
+
+    // 성격 키워드 서술 (최대 2개만)
+    for(let t of char.traits){
+      if(traitSentences[t] && traitSentencesUsed < 2){
+        const arr = traitSentences[t];
+        narrative += ' ' + arr[Math.floor(Math.random()*arr.length)];
+        traitSentencesUsed++;
+      }
+    }
+
+    return narrative;
+  }
+
+  // 호감도 및 관계 상태 업데이트 함수
+  function updateRelationships(){
+    // 랜덤 변화 (예: -5~5 범위)
+    // 여기서 호감도 변화 로그 팝업 생성
+    state.characters.forEach(char => {
+      for(let otherName in char.relationships){
+        let change = 0;
+        if(Math.random() < 0.2){ // 20% 확률 변화
+          change = Math.floor(Math.random()*11) - 5; // -5 ~ +5
+          if(change !== 0){
+            char.relationships[otherName] += change;
+            // 0~100 클램핑
+            if(char.relationships[otherName] > 100) char.relationships[otherName] = 100;
+            if(char.relationships[otherName] < -50) char.relationships[otherName] = -50;
+            // 변화 팝업
+            if(change > 0){
+              addLogPopup(`${char.name}의 ${otherName}에 대한 호감도가 ${change}만큼 올랐습니다.`, 'likeUp');
+            } else if(change < 0){
+              addLogPopup(`${char.name}의 ${otherName}에 대한 호감도가 ${-change}만큼 떨어졌습니다.`, 'likeDown');
             }
-
-            // 선 그리기
-            drawArrow(ctx, startX, startY, endX, endY);
-
-            // 호감도 텍스트 위치 (중간 + 약간 위)
-            const midX = (startX + endX) / 2;
-            const midY = (startY + endY) / 2 - 10;
-            ctx.fillText(val, midX, midY);
+            // 관계 변화 체크
+            checkRelationshipChange(char, otherName);
           }
         }
-      });
+      }
     });
   }
 
-  // 초기 세팅
-  function init(){
-    updateDateTitle();
-    resetForm();
-    updateInitialLikesUI();
-    renderStudentList();
-    toggleStudentListBtn.disabled = true;
+  // 관계 상태 명칭 결정
+  function getRelationStatus(val1, val2){
+    // val1: char1->char2, val2: char2->char1
+    function statusByVal(v){ // 호감도에 따른 상태
+      if(v >= 80) return '약혼자';
+      if(v >= 50) return '연인';
+      if(v >= 20) return '썸';
+      if(v > 0) return '짝사랑';
+      if(v < 0) return '적대';
+      return '무관심';
+    }
+
+    const s1 = statusByVal(val1);
+    const s2 = statusByVal(val2);
+
+    if(s1 === '짝사랑' && s2 === '짝사랑') return '썸';
+    if(s1 === '썸' && s2 === '썸') return '썸';
+    if(s1 === '연인' && s2 === '연인') return '연인';
+    if(s1 === '약혼자' && s2 === '약혼자') return '약혼자';
+
+    if(s1 === '짝사랑' && s2 > 0) return '짝사랑';
+    if(s2 === '짝사랑' && s1 > 0) return '짝사랑';
+
+    if(s1 === '적대' && s2 === '적대') return '적대';
+
+    return '무관심';
   }
 
-  init();
-</script>
+  // 관계 변화 이벤트 처리
+  function checkRelationshipChange(char, otherName){
+    const otherChar = state.characters.find(c => c.name === otherName);
+    if(!otherChar) return;
 
+    const val1 = char.relationships[otherName];
+    const val2 = otherChar.relationships[char.name] || 0;
+
+    const prevStatus = (char._lastRel && char._lastRel[otherName]) || '무관심';
+    const curStatus = getRelationStatus(val1, val2);
+
+    if(prevStatus !== curStatus){
+      // 이벤트 로그
+      addLogPopup(`${char.name}와(과) ${otherName}의 관계가 '${prevStatus}'에서 '${curStatus}'로 변했습니다.`, 'relationChange');
+    }
+
+    // 저장 현재 상태
+    if(!char._lastRel) char._lastRel = {};
+    char._lastRel[otherName] = curStatus;
+  }
+
+  // 로그 팝업 추가
+  function addLogPopup(text, type='event'){
+    const dateStr = formatDate(state.currentDate);
+    const popupDiv = document.createElement('div');
+    popupDiv.className = 'popup';
+    if(type === 'likeUp') popupDiv.classList.add('likeUp');
+    else if(type === 'likeDown') popupDiv.classList.add('likeDown');
+    else if(type === 'relationChange') popupDiv.classList.add('relationChange');
+    else popupDiv.classList.add('event');
+    popupDiv.textContent = `[${dateStr}] ${text}`;
+    dayLog.prepend(popupDiv);
+  }
+
+  // 하루 진행
+  function nextDay(){
+    // 날짜 증가
+    state.currentDate.setDate(state.currentDate.getDate() + 1);
+
+    // 이벤트 확인 및 로그
+    const todayEvent = getEventByDate(state.currentDate);
+    if(todayEvent){
+      addLogPopup(`오늘은 '${todayEvent.name}' 일정이 있습니다.`, 'event');
+    }
+
+    // 관계도 변화 업데이트
+    updateRelationships();
+
+    // 오늘 하루 서술 생성 및 출력
+    let narrativeText = `--- ${formatDate(state.currentDate)} ---\n`;
+    state.characters.forEach(char => {
+      narrativeText += generateDailyNarrative(char, state.currentDate, todayEvent ? todayEvent.name : '') + '\n\n';
+    });
+
+    // 하루 서술은 로그 아래에 추가 (div)
+    const narrativeDiv = document.createElement('div');
+    narrativeDiv.style.marginTop = '12px';
+    narrativeDiv.style.borderTop = '1px solid #ddd';
+    narrativeDiv.style.paddingTop = '6px';
+    narrativeDiv.style.whiteSpace = 'pre-line';
+    narrativeDiv.textContent = narrativeText;
+    dayLog.prepend(narrativeDiv);
+
+    dateTitle.textContent = `현재 날짜: ${formatDate(state.currentDate)}`;
+
+    renderStudentList();
+    drawRelation();
+  }
+
+  // 초기화 & 첫 렌더링
+  resetForm();
+  renderStudentList();
+  drawRelation();
+  dateTitle.textContent = `현재 날짜: ${formatDate(state.currentDate)}`;
+  dayLog.textContent = '시작하려면 "다음 날" 버튼을 눌러주세요.';
+
+  nextDayBtn.addEventListener('click', nextDay);
+  clearLogBtn.addEventListener('click', () => {
+    if(confirm('기록을 삭제하시겠습니까?')){
+      dayLog.textContent = '';
+    }
+  });
+</script>
 </body>
 </html>
