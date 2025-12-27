@@ -465,24 +465,72 @@
     }
   });
 
-  // 다음 날 버튼 클릭 시 날짜 + 이벤트/서술 처리 (기존 로직 참조)
-  nextDayBtn.addEventListener('click', () => {
+nextDayBtn.addEventListener('click', () => {
     // 날짜 증가
     state.currentDate.setDate(state.currentDate.getDate() + 1);
-
-    // 날짜 표시 업데이트
     const month = state.currentDate.getMonth() + 1;
     const date = state.currentDate.getDate();
-
-    // 오늘 해당하는 이벤트 찾아서 괄호로 표시
-    let todayEventName = '';
     const curDateStr = state.currentDate.toISOString().slice(0,10);
-    for(let ev of events){
-      if(curDateStr >= ev.start && curDateStr <= ev.end){
-        todayEventName = ev.name;
-        break;
-      }
+
+    // 오늘 이벤트 확인
+    const todayEvents = events.filter(ev => curDateStr >= ev.start && curDateStr <= ev.end);
+    let eventText = todayEvents.length ? ` (${todayEvents.map(e=>e.name).join(', ')})` : '';
+    dateTitle.textContent = `현재 날짜: ${month}월 ${date}일${eventText}`;
+
+    // 로그 생성
+    const logs = [];
+
+    // 1. 이벤트 기반 하루 서술
+    if(todayEvents.length){
+        todayEvents.forEach(ev => {
+            logs.push(`📅 오늘은 ${ev.name}가 있는 날이다. 학생들이 바쁘게 움직였다.`);
+        });
+    } else {
+        // 랜덤 일상
+        const dailyActivities = [
+            '오늘은 평범한 하루였다. 교실에서 수업을 듣고 친구들과 이야기를 나눴다.',
+            '점심시간에 친구들과 함께 간식을 나눠먹었다.',
+            '방과 후 운동장에서 뛰어놀며 즐거운 시간을 보냈다.',
+            '도서관에서 조용히 책을 읽었다.'
+        ];
+        const randomActivity = dailyActivities[Math.floor(Math.random()*dailyActivities.length)];
+        logs.push(randomActivity);
     }
+
+    // 2. 캐릭터 간 호감도 변화
+    for(let i=0; i<state.characters.length; i++){
+        for(let j=i+1; j<state.characters.length; j++){
+            const c1 = state.characters[i];
+            const c2 = state.characters[j];
+
+            // 랜덤 변화량: -5 ~ +5
+            const delta = Math.floor(Math.random()*11) - 5;
+            c1.relationships[c2.name] = (c1.relationships[c2.name] || 0) + delta;
+            c2.relationships[c1.name] = (c2.relationships[c1.name] || 0) + delta;
+
+            if(delta > 0){
+                logs.push(`❤️ ${c1.name}와 ${c2.name}의 호감도가 ${delta}만큼 올랐다.`);
+            } else if(delta < 0){
+                logs.push(`💔 ${c1.name}와 ${c2.name}의 호감도가 ${-delta}만큼 떨어졌다.`);
+            } else {
+                logs.push(`🤝 ${c1.name}와 ${c2.name}의 관계는 변화가 없었다.`);
+            }
+        }
+    }
+
+    // 3. 로그 표시
+    logs.forEach(log => {
+        const div = document.createElement('div');
+        if(log.includes('❤️')) div.className = 'likeUp';
+        else if(log.includes('💔')) div.className = 'likeDown';
+        else div.className = 'relationChange';
+        div.textContent = log;
+        dayLog.prepend(div);
+    });
+
+    renderStudentList();
+});
+
 
     dateTitle.textContent = `현재 날짜: ${month}월 ${date}일${todayEventName ? ' (' + todayEventName + ')' : ''}`;
 
