@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 <title>여름 청춘 시뮬레이터</title>
-
-<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
-
 <style>
 :root {
   --bg-pastel: #e3f6fc;
@@ -17,128 +14,93 @@
   --text-color: #012a4a;
   --event-card: #d0f4ff;
   --relation-card: #ffd8d8;
+  --romance-card: #ffe0f0;
 }
 body {
-  margin: 0;
-  font-family: 'Gowun Dodum', sans-serif;
-  background: var(--bg-pastel);
-  color: var(--text-color);
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
+  margin:0;
+  font-family:'Gowun Dodum', sans-serif;
+  background:var(--bg-pastel);
+  color:var(--text-color);
+  display:flex;
+  height:100vh;
+  overflow:hidden;
 }
-
-/* ================= LAYOUT ================= */
-#leftPanel, #rightPanel {
-  padding: 12px;
-  box-sizing: border-box;
+#leftPanel,#rightPanel {
+  padding:12px;
+  box-sizing:border-box;
 }
-
 #leftPanel {
-  width: 35%;
-  border-right: 3px solid var(--border);
-  overflow-y: auto;
+  width:35%;
+  border-right:3px solid var(--border);
+  overflow-y:auto;
 }
-
 #rightPanel {
-  width: 65%;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
+  width:65%;
+  display:flex;
+  flex-direction:column;
+  overflow-y:auto;
 }
-
-h1 {
-  text-align: center;
-  font-size: 1.8em;
-  margin-bottom: 8px;
-  color: var(--btn-bg);
+h1{
+  text-align:center;
+  font-size:1.8em;
+  margin-bottom:8px;
+  color:var(--btn-bg);
 }
-
-/* ================= BUTTONS ================= */
-button {
-  background: var(--btn-bg);
-  border: none;
-  border-radius: 12px;
-  color: white;
-  padding: 7px 12px;
-  margin: 4px;
-  font-size: 0.95em;
-  cursor: pointer;
+button{
+  background:var(--btn-bg);
+  border:none;
+  border-radius:12px;
+  color:white;
+  padding:7px 12px;
+  margin:4px;
+  font-size:0.95em;
+  cursor:pointer;
 }
-button:hover {
-  background: var(--btn-hover);
+button:hover{
+  background:var(--btn-hover);
 }
-
-/* ================= CARDS ================= */
-.card {
-  background: var(--card-bg);
-  border-radius: 12px;
-  padding: 10px;
-  box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-  margin-bottom: 8px;
+.card{
+  background:var(--card-bg);
+  border-radius:12px;
+  padding:10px;
+  box-shadow:2px 2px 5px rgba(0,0,0,0.1);
+  margin-bottom:8px;
 }
-
-/* ================= LAYOUT PANELS ================= */
-#dateDisplay {
-  font-size: 1.2em;
-  text-align: center;
-  margin: 6px 0;
-  font-weight: bold;
+#dateDisplay{
+  font-size:1.2em;
+  text-align:center;
+  margin:6px 0;
+  font-weight:bold;
 }
-
-#studentList {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+#studentList{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
 }
-
-input[type="text"], input[type="number"] {
-  width: 95%;
-  padding: 6px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  margin: 4px 0;
+input[type="text"], input[type="number"]{
+  width:95%;
+  padding:6px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  margin:4px 0;
 }
-
-/* ================= LOGS ================= */
-#logHeader {
-  text-align: center;
-  font-weight: bold;
-  margin: 8px 0;
-}
-#logContent {
-  overflow-y: auto;
-  flex-grow: 1;
-  padding: 8px;
-}
-
-/* ================= SPECIAL CARDS ================= */
-.event-card {
-  background: var(--event-card);
-  border-radius: 8px;
-  padding: 6px;
-  margin-top: 5px;
-}
-.relation-card {
-  background: var(--relation-card);
-  border-radius: 8px;
-  padding: 6px;
-  margin-top: 5px;
-}
-
+#logHeader{text-align:center;font-weight:bold;margin:8px 0;}
+#logContent{overflow-y:auto;flex-grow:1;padding:8px;}
+.event-card{background:var(--event-card);border-radius:8px;padding:6px;margin-top:5px;}
+.relation-card{background:var(--relation-card);border-radius:8px;padding:6px;margin-top:5px;}
+.romance-card{background:var(--romance-card);border-radius:8px;padding:6px;margin-top:5px;}
 </style>
 </head>
 <body>
 
-<!-- ===== LEFT PANEL ===== -->
 <div id="leftPanel">
-  <h1>학생 명단</h1>
+  <h1>학생 관리</h1>
   <div id="studentList"></div>
   <button onclick="showAddForm()">➕ 캐릭터 추가</button>
   <button onclick="displayRelations()">👥 관계도</button>
+  <button onclick="renderStudentList()">📋 학생 명단</button>
 </div>
 
-<!-- ===== RIGHT PANEL ===== -->
 <div id="rightPanel">
   <div id="dateDisplay"></div>
   <div style="text-align:center;">
@@ -151,12 +113,12 @@ input[type="text"], input[type="number"] {
 </div>
 
 <script>
-// ================= STATE =================
 let state = {
-  date: new Date(2026, 2, 2), // 3월 2일
+  date: new Date(2026,2,2),
   characters: [],
   dailyLogs: [],
-  events: [
+  events:[
+    {start:'3/2', end:'3/2', name:'입학식'},
     {start:'4/21', end:'4/24', name:'1학기 중간고사'},
     {start:'6/14', end:'6/18', name:'1학기 기말고사'},
     {start:'7/2', end:'8/1', name:'여름방학'},
@@ -169,186 +131,203 @@ let state = {
   ]
 };
 
-// =============== DATE/SEASON/EVENT HELPERS ===============
-function formatDate(d){
-  let m=d.getMonth()+1, day=d.getDate();
-  return `${m}월 ${day}일`;
-}
+// ===== DATE & SEASON =====
+function formatDate(d){return `${d.getMonth()+1}월 ${d.getDate()}일`;}
 function getSeason(d){
   let m=d.getMonth()+1;
-  if(m>=3 && m<=5) return "봄";
-  if(m>=6 && m<=8) return "여름";
-  if(m>=9 && m<=11) return "가을";
+  if(m>=3&&m<=5) return "봄";
+  if(m>=6&&m<=8) return "여름";
+  if(m>=9&&m<=11) return "가을";
   return "겨울";
 }
 function checkEvent(d){
   let m=d.getMonth()+1, day=d.getDate();
   for(let e of state.events){
-    let [sm, sd] = e.start.split('/').map(Number);
-    let [em, ed] = e.end.split('/').map(Number);
-    if((m>sm || (m===sm && day>=sd)) && (m<em || (m===em && day<=ed))){
-      return e.name;
-    }
+    let [sm, sd]=e.start.split('/').map(Number);
+    let [em, ed]=e.end.split('/').map(Number);
+    if((m>sm||(m===sm&&day>=sd))&&(m<em||(m===em&&day<=ed))) return e.name;
   }
   return "";
 }
 function updateDateDisplay(){
-  let dateStr = formatDate(state.date);
-  let season = getSeason(state.date);
-  let ev = checkEvent(state.date);
-  document.getElementById("dateDisplay").innerText =
-    `📅 ${dateStr} · ${season}${ev ? " · "+ev : ""}`;
+  let dateStr=formatDate(state.date);
+  let season=getSeason(state.date);
+  let ev=checkEvent(state.date);
+  document.getElementById("dateDisplay").innerText=`📅 ${dateStr} · ${season}${ev? " · "+ev : ""}`;
 }
 
-// =============== STUDENT LIST ===============
+// ===== STUDENT LIST =====
 function renderStudentList(){
-  let html = "";
+  let html="";
   state.characters.forEach((c, idx)=>{
-    html += `
-      <div class="card">
-        <b>${c.name}</b><br>
-        학년: ${c.grade}<br>
-        성격: ${c.personality.join(", ")}<br>
-        ❤️호감도:
-        ${state.characters.map(o=>""
-          +(o.name !== c.name ?
-            `${o.name}: ${c.relationships[o.name]||0}<br>`:"")).join("")}
-        <button onclick="editForm(${idx})">✏️ 편집</button>
-      </div>
-    `;
+    let relationHtml = state.characters.map(o=>{
+      if(o.name!==c.name){
+        let rel=c.relationships[o.name]||0;
+        let status=getRelationStatus(c,o);
+        return `${o.name}: ${rel} (${status})<br>`;
+      } return "";
+    }).join("");
+    html+=`<div class="card">
+      <b>${c.name}</b> (${c.grade})<br>
+      성격: ${c.personality.join(", ")}<br>
+      ❤️관계:<br>${relationHtml}
+      <button onclick="editForm(${idx})">✏️ 편집</button>
+    </div>`;
   });
-  document.getElementById("studentList").innerHTML = html;
+  document.getElementById("studentList").innerHTML=html;
 }
 function showAddForm(){
-  document.getElementById("studentList").innerHTML = `
+  document.getElementById("studentList").innerHTML=`
     <div class="card">
       이름 <input id="nameField" type="text"><br>
       학년 <input id="gradeField" type="number" min="1" max="3" value="1"><br>
       성격(쉼표) <input id="personField" type="text"><br>
+      초기 호감도(콤마로 다른 캐릭터 이름:값) <input id="initRelField" type="text"><br>
       <button onclick="addCharacter()">추가</button>
-    </div>
-  `;
+    </div>`;
 }
 function addCharacter(){
-  let name = document.getElementById("nameField").value.trim();
-  let grade = Number(document.getElementById("gradeField").value);
-  let pers = document.getElementById("personField").value
-              .split(",").map(s=>s.trim()).filter(Boolean);
-  if(!name || !grade || pers.length===0){
-    alert("모든 항목 입력 필요");
-    return;
-  }
-  let rel = {};
+  let name=document.getElementById("nameField").value.trim();
+  let grade=Number(document.getElementById("gradeField").value);
+  let pers=document.getElementById("personField").value.split(",").map(s=>s.trim()).filter(Boolean);
+  if(!name||!grade||pers.length===0){alert("모든 항목 입력 필요");return;}
+  let rel={};
   state.characters.forEach(x=>rel[x.name]=0);
-  let newChar = {name, grade, personality:pers, relationships:rel, eventTriggered:[]};
-  // add new char to others
-  state.characters.forEach(x=> x.relationships[name]=0);
+  // 초기 호감도 설정
+  let initRel=document.getElementById("initRelField").value.trim();
+  if(initRel){
+    initRel.split(",").forEach(p=>{
+      let [tgt,val]=p.split(":");
+      if(tgt&&val){rel[tgt.trim()]=Number(val);}
+    });
+  }
+  let newChar={name,grade,personality:pers,relationships:rel,eventTriggered:[]};
+  state.characters.forEach(x=>x.relationships[name]=0);
   state.characters.push(newChar);
   renderStudentList();
 }
 
-// edit
+// ===== EDIT CHARACTER =====
 function editForm(i){
-  let c = state.characters[i];
-  document.getElementById("studentList").innerHTML = `
+  let c=state.characters[i];
+  document.getElementById("studentList").innerHTML=`
     <div class="card">
       이름 <input id="nameField" type="text" value="${c.name}"><br>
       학년 <input id="gradeField" type="number" min="1" max="3" value="${c.grade}"><br>
       성격(쉼표) <input id="personField" type="text" value="${c.personality.join(", ")}"><br>
       <button onclick="saveCharacter(${i})">저장</button>
-    </div>
-  `;
+    </div>`;
 }
 function saveCharacter(i){
-  let c = state.characters[i];
-  c.name = document.getElementById("nameField").value.trim();
-  c.grade = Number(document.getElementById("gradeField").value);
-  c.personality = document.getElementById("personField").value
-                     .split(",").map(s=>s.trim()).filter(Boolean);
+  let c=state.characters[i];
+  c.name=document.getElementById("nameField").value.trim();
+  c.grade=Number(document.getElementById("gradeField").value);
+  c.personality=document.getElementById("personField").value.split(",").map(s=>s.trim()).filter(Boolean);
   renderStudentList();
 }
 
-// =============== RELATIONSHIP VIEW ===============
+// ===== RELATIONSHIP STATUS =====
+function getRelationStatus(c,o){
+  let val=c.relationships[o.name]||0;
+  if(val>=80) return "약혼자";
+  if(val>=50) return "연인";
+  if(val>=20 && o.relationships[c.name]>=20) return "썸";
+  if(val>=20) return "짝사랑";
+  return "";
+}
 function displayRelations(){
-  if(state.characters.length < 2){
-    alert("캐릭터가 2명 이상이어야 관계도 표시 가능");
-    return;
-  }
-  let html = "<div class='card'><b>관계도</b><br>";
-  state.characters.forEach((c)=>{
-    state.characters.forEach((o)=>{
-      if(c.name !== o.name){
-        let val = c.relationships[o.name]||0;
-        let arrow = val > 50 ? "➤" : "—";
-        html += `${c.name} ${arrow} ${o.name} (${val})<br>`;
+  if(state.characters.length<2){alert("캐릭터가 2명 이상이어야 관계도 표시 가능");return;}
+  let html="<div class='card'><b>관계도</b><br>";
+  state.characters.forEach(c=>{
+    state.characters.forEach(o=>{
+      if(c.name!==o.name){
+        let val=c.relationships[o.name]||0;
+        let arrow=val>50?"➤":"—";
+        html+=`${c.name} ${arrow} ${o.name} (${val}, ${getRelationStatus(c,o)})<br>`;
       }
     });
   });
-  html += "</div>";
-  document.getElementById("studentList").innerHTML = html;
+  html+="</div>";
+  document.getElementById("studentList").innerHTML=html;
 }
 
-// =============== DAILY LOGS =================
-function scrollToLogs(){
-  document.getElementById("logContent").scrollTop =
-    document.getElementById("logContent").scrollHeight;
-}
-function clearLogs(){
-  if(confirm("기록만 삭제합니다 (캐릭터/관계 유지)")) {
-    state.dailyLogs = [];
-    document.getElementById("logContent").innerHTML = "";
-  }
-}
+// ===== DAILY LOGS =====
+function scrollToLogs(){document.getElementById("logContent").scrollTop=document.getElementById("logContent").scrollHeight;}
+function clearLogs(){if(confirm("기록만 삭제 (캐릭터/관계 유지)")){state.dailyLogs=[];document.getElementById("logContent").innerHTML="";}}
 
-// =============== ADVANCE DAY & CREATE LOG ===============
+// ===== ADVANCE DAY =====
 function advanceDay(){
   state.date.setDate(state.date.getDate()+1);
   createDailyLog();
   updateDateDisplay();
 }
 
+// ===== DAILY LOG GENERATION =====
 function createDailyLog(){
-  let dateStr = formatDate(state.date);
-  let season = getSeason(state.date);
-  let ev = checkEvent(state.date)||"";
+  let dateStr=formatDate(state.date);
+  let season=getSeason(state.date);
+  let ev=checkEvent(state.date)||"";
+  let log=`<div class="card"><b>${dateStr} · ${season}${ev? " · "+ev : ""}</b><br>`;
 
-  let log = `<div class="card"><b>${dateStr} · ${season}${ev? " · " + ev : ""}</b><br>`;
+  // 졸업 체크
+  if(dateStr==="2월 14일"){
+    state.characters.forEach(c=>{
+      if(c.grade===3){
+        log+=`🎓 졸업식! ${c.name}의 진로 방향성을 결정해야 합니다.<br>`;
+        let uni=prompt(`${c.name}는 대학에 입학합니까? (예/아니오)`);
+        if(uni==="예"){c.grade="졸업생(대학생)";} 
+        else {
+          let job=prompt(`${c.name}는 대학에 입학하지 않았습니다. 직업을 입력하세요`);
+          c.grade=`졸업생(${job})`;
+        }
+      }
+    });
+  }
 
   state.characters.forEach(c=>{
-    let actions = ["수업을 들었다","친구와 이야기했다","운동장에서 시간을 보냈다","책을 읽었다","간식을 먹었다"];
-    let mood = c.personality.includes("활발") ? "활발하게" :
-               c.personality.includes("조용") ? "조용히" : "평범하게";
-    let act = actions[Math.floor(Math.random()*actions.length)];
-    log += `${c.name}는 ${mood} ${act}.<br>`;
+    let actions=["수업을 들었다","친구와 이야기했다","운동장에서 시간을 보냈다","책을 읽었다","간식을 먹었다"];
+    let mood=c.personality.includes("활발")?"활발하게":
+             c.personality.includes("조용")?"조용히":"평범하게";
+    let act=actions[Math.floor(Math.random()*actions.length)];
+    log+=`${c.name}는 ${mood} ${act}.<br>`;
 
-    // 관계 변화
     state.characters.forEach(o=>{
-      if(c.name !== o.name){
-        let delta = Math.floor(Math.random()*11) - 5;
-        c.relationships[o.name] = (c.relationships[o.name]||0) + delta;
-        if(delta>0){
-          log += `<div class="event-card">${c.name}와 ${o.name}의 호감도가 +${delta} 상승!</div>`;
-        } else if(delta<0){
-          log += `<div class="relation-card">${c.name}와 ${o.name}의 관계가 조금 소원해졌다 (${delta})</div>`;
-        }
-        if(c.relationships[o.name] >= 70 && !c.eventTriggered.includes(o.name)){
+      if(c.name!==o.name){
+        let delta=Math.floor(Math.random()*11)-5;
+        c.relationships[o.name]=(c.relationships[o.name]||0)+delta;
+
+        if(delta>0) log+=`<div class="event-card">${c.name}와 ${o.name}의 호감도가 +${delta} 상승!</div>`;
+        else if(delta<0) log+=`<div class="relation-card">${c.name}와 ${o.name}의 관계가 소원해졌다 (${delta})</div>`;
+
+        // 🌸 관계 이벤트
+        if(c.relationships[o.name]>=20 && o.relationships[c.name]>=20 && !c.eventTriggered.includes(o.name)){
           c.eventTriggered.push(o.name);
-          log += `<div class="event-card">${c.name}과 ${o.name}은 좋은 시간을 가진 후 다음부터 같이 하교하기로 했다!</div>`;
+          log+=`<div class="romance-card">🌸관계도 이벤트 등장🌸<br>${c.name}은 ${o.name}를 볼 때마다 가슴 한 켠이 아려오는 듯 했습니다. 하지만 들키고 싶ません。</div>`;
+        }
+
+        // 고백 이벤트
+        if(c.relationships[o.name]>=50 && o.relationships[c.name]>=30 && !c.eventTriggered.includes("love_"+o.name)){
+          c.eventTriggered.push("love_"+o.name);
+          log+=`<div class="romance-card">💌 ${c.name}이 ${o.name}에게 고백했습니다! ${o.name}은 수락했습니다!</div>`;
+        } else if(c.relationships[o.name]>=50 && o.relationships[c.name]<30 && !c.eventTriggered.includes("reject_"+o.name)){
+          c.eventTriggered.push("reject_"+o.name);
+          c.relationships[o.name]-=20;
+          log+=`<div class="romance-card">💔 ${c.name}이 ${o.name}에게 고백했으나 거절당했습니다. 호감도 -20</div>`;
         }
       }
     });
   });
 
-  log += "</div>";
+  log+="</div>";
   state.dailyLogs.push(log);
-  document.getElementById("logContent").innerHTML += log;
+  document.getElementById("logContent").innerHTML+=log;
   scrollToLogs();
+  renderStudentList();
 }
 
-// init
+// ===== INIT =====
 updateDateDisplay();
 renderStudentList();
-
 </script>
 
 </body>
